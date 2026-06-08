@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+        <RollingFile name="File"
+                     fileName="logs/app.log"
+                     filePattern="logs/app-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{ISO8601} [%t] %-5level %logger{50} - %msg%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="10MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="30"/>
+        </RollingFile>
+
+        <JDBC name="LogDB" tableName="app_logs">
+            <DriverManager
+                connectionString="jdbc:postgresql://localhost:5432/kore_logs"
+                driverClassName="org.postgresql.Driver"
+                userName="postgres"
+                password="secret"/>
+            <Column name="event_date" isEventTimestamp="true"/>
+            <Column name="level"      pattern="%level"             isUnicode="false"/>
+            <Column name="logger"     pattern="%logger{50}"        isUnicode="false"/>
+            <Column name="message"    pattern="%message"           isUnicode="false"/>
+            <Column name="thread"     pattern="%thread"            isUnicode="false"/>
+            <Column name="throwable"  pattern="%throwable{short}"  isUnicode="false"/>
+        </JDBC>
+
+        <Async name="AsyncLogDB" bufferSize="512">
+            <AppenderRef ref="LogDB"/>
+        </Async>
+    </Appenders>
+
+    <Loggers>
+        <!-- Controller layer: INFO — log ingresso richieste e risposte significative -->
+        <Logger name="com.project.kore.controller" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
+            <AppenderRef ref="AsyncLogDB"/>
+        </Logger>
+
+        <!-- Service layer: DEBUG — log logica di business dettagliata -->
+        <Logger name="com.project.kore.service" level="DEBUG" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
+            <AppenderRef ref="AsyncLogDB"/>
+        </Logger>
+
+        <!-- Security layer: INFO — log autenticazione e autorizzazione -->
+        <Logger name="com.project.kore.security" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
+            <AppenderRef ref="AsyncLogDB"/>
+        </Logger>
+
+        <!-- Observer/Event listeners: INFO -->
+        <Logger name="com.project.kore.observer" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
+            <AppenderRef ref="AsyncLogDB"/>
+        </Logger>
+
+        <!-- Scheduler: INFO -->
+        <Logger name="com.project.kore.scheduler" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
+            <AppenderRef ref="AsyncLogDB"/>
+        </Logger>
+
+        <!-- Exception handler: WARN -->
+        <Logger name="com.project.kore.exception" level="WARN" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
+            <AppenderRef ref="AsyncLogDB"/>
+        </Logger>
+
+        <!-- Hibernate/JPA: WARN — evita SQL spam in console -->
+        <Logger name="org.hibernate" level="WARN" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger name="org.hibernate.SQL" level="WARN" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+
+        <!-- Spring Framework: WARN — solo errori rilevanti -->
+        <Logger name="org.springframework" level="WARN" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+
+        <!-- Audit interceptor: INFO — ogni richiesta HTTP alle API -->
+        <Logger name="com.project.kore.config.AuditInterceptor" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
+            <AppenderRef ref="AsyncLogDB"/>
+        </Logger>
+
+        <!-- Root logger: WARN — tutto ciò che non ha un logger specifico -->
+        <Root level="WARN">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
+        </Root>
+    </Loggers>
+</Configuration>

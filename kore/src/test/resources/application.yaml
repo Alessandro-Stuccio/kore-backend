@@ -1,0 +1,49 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: secret
+  jpa:
+    hibernate:
+      ddl-auto: create
+  mail:
+    host: localhost
+    port: 25
+    username: test@test.com
+  task:
+    scheduling:
+      enabled: false
+  rabbitmq:
+    listener:
+      simple:
+        auto-startup: false
+
+file:
+  upload-dir: uploads
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+jwt:
+  expiration: 86400000
+
+resend:
+  api:
+    key: test-key
+    from: test@test.com
+
+admin:
+  email: admin@test.com
+
+mail:
+  from: test@test.com
+
+cors:
+  allowed-origins: http://localhost:4200
+
+schedule:
+  time:
+    subscription: 0 0 0 * * ?
+    bookings: 0 */5 * * * ?
