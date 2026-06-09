@@ -14,8 +14,8 @@ import java.util.List;
 
 /**
  * Cron job che gira in background ogni notte a mezzanotte.
- * Controlla se è il primo del mese: se sì, resetta i crediti mensili di PT e Nutrizionista 
- * per tutti gli abbonamenti attivi, gestendo anche lo scatto delle rate.
+ * Controlla individualmente ogni abbonamento attivo e resetta i crediti mensili
+ * di PT e Nutrizionista in base alla data di anniversario del singolo cliente.
  */
 @Component
 public class SubscriptionScheduler {
@@ -35,27 +35,41 @@ public class SubscriptionScheduler {
 
         for (Subscription sub : activeSubs) {
             try {
-                // Reset crediti il primo giorno di ogni mese
-                if (today.getDayOfMonth() == 1) {
-                    if (sub.getPaymentFrequency() == PaymentFrequency.RATE_MENSILI) {
-                        if (sub.getNextPaymentDate() != null
-                                && !today.isBefore(sub.getNextPaymentDate())
-                                && sub.getInstallmentsPaid() < sub.getTotalInstallments()) {
+                boolean deveRinnovare = false;
 
+                if (sub.getPaymentFrequency() == PaymentFrequency.RATE_MENSILI) {
+                    // Per i pagamenti rateali, il rinnovo è guidato dalla scadenza della prossima rata
+                    if (sub.getNextPaymentDate() != null
+                            && !today.isBefore(sub.getNextPaymentDate())) {
+
+                        if (sub.getInstallmentsPaid() < sub.getTotalInstallments()) {
                             sub.setInstallmentsPaid(sub.getInstallmentsPaid() + 1);
                             sub.setNextPaymentDate(sub.getNextPaymentDate().plusMonths(1));
+                            deveRinnovare = true;
                         } else {
-                            log.warn("Pagamento rateale non dovuto per l'abbonamento ID {}: salto il reset dei crediti", sub.getId());
+                            log.warn("Pagamento rateale non dovuto per l'abbonamento ID {}: tutte le rate sono saldate", sub.getId());
                             continue;
                         }
                     }
+                } else {
+                    // Per abbonamenti in soluzione unica (es. annuali/trimestrali) che hanno comunque crediti mensili,
+                    // verifichiamo se è passato esattamente un mese dall'ultimo rinnovo (o dalla data di inizio)
+                    LocalDate dataRiferimento = sub.getLastRenewalDate() != null ? sub.getLastRenewalDate() : sub.getStartDate();
+                    if (dataRiferimento != null && !today.isBefore(dataRiferimento.plusMonths(1))) {
+                        deveRinnovare = true;
+                    }
+                }
 
+                // Esegui il reset dei crediti solo se la condizione temporale specifica è soddisfatta
+                if (deveRinnovare) {
                     sub.setCurrentCreditsPT(sub.getPlan().getMonthlyCreditsPT());
                     sub.setCurrentCreditsNutri(sub.getPlan().getMonthlyCreditsNutri());
                     sub.setLastRenewalDate(today);
 
                     subscriptionRepository.save(sub);
+                    log.info("Rinnovo crediti eseguito con successo per l'abbonamento ID {}", sub.getId());
                 }
+
             } catch (Exception e) {
                 log.error("Errore nel rinnovo crediti per subscription ID {}: {}", sub.getId(), e.getMessage());
             }
