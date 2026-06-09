@@ -1,7 +1,5 @@
 package com.project.kore.model;
 
-import com.project.kore.builder.DocumentBuilder;
-import com.project.kore.builder.impl.DocumentBuilderImpl;
 import com.project.kore.enums.DocumentType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -86,10 +84,6 @@ public class Document {
 
     public String getNotes() { return notes; }
     public void setNotes(String notes) { this.notes = notes; }
-
-    public static DocumentBuilder builder() {
-        return new DocumentBuilderImpl();
-    }
 
     @Override
     public boolean equals(Object o) {

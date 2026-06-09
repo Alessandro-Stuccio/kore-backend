@@ -52,15 +52,14 @@ public class AuditInterceptor implements HandlerInterceptor {
     protected void persistAsync(String userIdentity, String method, String path,
                                 String ip, int httpStatus, String requestBody) {
         try {
-            AuditLog entry = AuditLog.builder()
-                    .loggedAt(LocalDateTime.now())
-                    .userIdentity(userIdentity)
-                    .httpMethod(method)
-                    .httpPath(path)
-                    .ipAddress(ip)
-                    .httpStatus(httpStatus)
-                    .requestBody(requestBody)
-                    .build();
+            AuditLog entry = new AuditLog();
+            entry.setLoggedAt(LocalDateTime.now());
+            entry.setUserIdentity(userIdentity);
+            entry.setHttpMethod(method);
+            entry.setHttpPath(path);
+            entry.setIpAddress(ip);
+            entry.setHttpStatus(httpStatus);
+            entry.setRequestBody(requestBody);
             auditLogRepository.save(entry);
         } catch (Exception e) {
             log.warn("Audit log fallito per {} {}: {}", method, path, e.getMessage());

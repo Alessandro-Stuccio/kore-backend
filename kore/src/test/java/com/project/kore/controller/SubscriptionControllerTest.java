@@ -29,6 +29,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
@@ -105,16 +106,21 @@ class SubscriptionControllerTest {
                 .andExpect(jsonPath("$.active").value(true));
     }
 
+    // La validazione del DTO non è più sul controller (niente @Valid) ma sul facade
+    // (UserFacade.activateSubscription(@Valid PlanRequest), classe @Validated): un planId/paymentFrequency
+    // null produce ConstraintViolationException → 400. Qui copriamo il vincolo che ora fa quel lavoro.
     @Test
-    @DisplayName("POST /api/subscriptions/activate — 400 quando planId è null")
-    void activateSubscription_missingPlanId_returns400() throws Exception {
-        PlanRequest req = new PlanRequest(null, null);
+    @DisplayName("PlanRequest — planId/paymentFrequency null violano i vincoli (validati ora sul facade → 400)")
+    void activateSubscription_missingPlanId_violatesConstraints() {
+        try (jakarta.validation.ValidatorFactory factory = jakarta.validation.Validation.buildDefaultValidatorFactory()) {
+            jakarta.validation.Validator validator = factory.getValidator();
+            PlanRequest req = new PlanRequest(null, null);
 
-        mockMvc.perform(post("/api/subscriptions/activate")
-                        .with(withMockUser)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req)))
-                .andExpect(status().isBadRequest());
+            var violations = validator.validate(req);
+
+            assertThat(violations).extracting(v -> v.getPropertyPath().toString())
+                    .contains("planId", "paymentFrequency");
+        }
     }
 
     @Test

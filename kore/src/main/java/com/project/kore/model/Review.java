@@ -1,7 +1,5 @@
 package com.project.kore.model;
 
-import com.project.kore.builder.ReviewBuilder;
-import com.project.kore.builder.impl.ReviewBuilderImpl;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,6 +11,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -33,15 +34,19 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "client è obbligatorio")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id", nullable = false, foreignKey = @ForeignKey(name = "fk_review_client_id"))
     private User client;
 
+    @NotNull(message = "professional è obbligatorio")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "professional_id", nullable = false, foreignKey = @ForeignKey(name = "fk_review_professional_id"))
     private User professional;
 
     // Punteggio da 1 a 5
+    @Min(value = 1, message = "rating deve essere compreso tra 1 e 5")
+    @Max(value = 5, message = "rating deve essere compreso tra 1 e 5")
     @Column(nullable = false)
     private int rating;
 
@@ -71,10 +76,6 @@ public class Review {
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-
-    public static ReviewBuilder builder() {
-        return new ReviewBuilderImpl();
-    }
 
     @Override
     public boolean equals(Object o) {

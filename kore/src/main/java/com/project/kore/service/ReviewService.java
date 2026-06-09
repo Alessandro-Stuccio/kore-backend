@@ -2,6 +2,7 @@ package com.project.kore.service;
 
 import com.project.kore.model.Review;
 import com.project.kore.model.User;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.validation.annotation.Validated;
 
@@ -17,7 +18,7 @@ public interface ReviewService {
      * @param review la recensione da salvare
      * @return la recensione salvata
      */
-    Review save(@NotNull Review review);
+    Review save(@NotNull @Valid Review review);
 
     /**
      * Dice se quel cliente ha già recensito quel professionista (ne è ammessa una sola).

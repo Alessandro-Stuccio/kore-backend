@@ -4,7 +4,6 @@ import com.project.kore.dto.request.BookingRequest;
 import com.project.kore.dto.response.BookingResponse;
 import com.project.kore.facade.BookingFacade;
 import com.project.kore.model.User;
-import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +38,7 @@ public class BookingController {
      * @return 200 con i dati della prenotazione confermata
      */
     @PostMapping
-    public ResponseEntity<BookingResponse> createBooking(@Valid @RequestBody BookingRequest request,
+    public ResponseEntity<BookingResponse> createBooking(@RequestBody BookingRequest request,
                                                           @AuthenticationPrincipal User user) {
         log.info("Richiesta prenotazione slot {} da utente {}", request.slotId(), user.getId());
         BookingResponse response = bookingFacade.createBooking(request, user.getId());

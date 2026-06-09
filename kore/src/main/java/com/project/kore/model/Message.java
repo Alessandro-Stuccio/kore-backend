@@ -1,8 +1,7 @@
 package com.project.kore.model;
 
-import com.project.kore.builder.MessageBuilder;
-import com.project.kore.builder.impl.MessageBuilderImpl;
 import com.project.kore.enums.MessageStatus;
+import com.project.kore.util.BusinessConstants;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -13,6 +12,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -30,6 +32,8 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "content non può essere vuoto")
+    @Size(max = BusinessConstants.MAX_MESSAGE_LENGTH, message = "content non può superare {max} caratteri")
     private String content;
 
     private LocalDateTime timeStamp;
@@ -40,6 +44,7 @@ public class Message {
     /** true se il mittente è user1 della chat, false se è user2. */
     private boolean sentByUser1;
 
+    @NotNull(message = "chat è obbligatorio")
     @ManyToOne
     @JoinColumn(name = "chat_id", nullable = false, foreignKey = @ForeignKey(name = "fk_message_chat_id"))
     private Chat chat;
@@ -63,10 +68,6 @@ public class Message {
 
     public Chat getChat() { return chat; }
     public void setChat(Chat chat) { this.chat = chat; }
-
-    public static MessageBuilder builder() {
-        return new MessageBuilderImpl();
-    }
 
     @Override
     public boolean equals(Object o) {

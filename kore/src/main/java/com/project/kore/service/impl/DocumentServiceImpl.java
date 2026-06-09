@@ -10,10 +10,22 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 /** CRUD dei documenti caricati dagli utenti. */
 @Service
 public class DocumentServiceImpl implements DocumentService {
+
+    // Estensione file → content-type atteso, per il controllo di coerenza ereditato dal vecchio build().
+    private static final Map<String, String> EXT_CONTENT_TYPE = Map.of(
+            "pdf",  "application/pdf",
+            "jpg",  "image/jpeg",
+            "jpeg", "image/jpeg",
+            "png",  "image/png",
+            "doc",  "application/msword",
+            "gif",  "image/gif",
+            "txt",  "text/plain"
+    );
 
     private final DocumentRepository documentRepository;
 
@@ -24,16 +36,31 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public Document uploadDocument(String filePath, String originalName, String contentType,
                                    String docTypeStr, User client, User uploader) {
-        Document doc = Document.builder()
-                .fileName(originalName)
-                .filePath(filePath)
-                .contentType(contentType)
-                .type(DocumentType.valueOf(docTypeStr))
-                .owner(client)
-                .uploadedBy(uploader)
-                .uploadDate(LocalDateTime.now())
-                .build();
+        validateContentTypeCoherence(originalName, contentType);
+        Document doc = new Document();
+        doc.setFileName(originalName);
+        doc.setFilePath(filePath);
+        doc.setContentType(contentType);
+        doc.setType(DocumentType.valueOf(docTypeStr));
+        doc.setOwner(client);
+        doc.setUploadedBy(uploader);
+        doc.setUploadDate(LocalDateTime.now());
         return documentRepository.save(doc);
+    }
+
+    // Invariante cross-field (fileName vs contentType) ereditata dal vecchio DocumentBuilder.build().
+    private static void validateContentTypeCoherence(String fileName, String contentType) {
+        if (fileName != null && contentType != null) {
+            int dot = fileName.lastIndexOf('.');
+            if (dot >= 0) {
+                String ext = fileName.substring(dot + 1).toLowerCase();
+                String expected = EXT_CONTENT_TYPE.get(ext);
+                if (expected != null && !contentType.equals(expected)) {
+                    throw new IllegalArgumentException(
+                            "contentType '" + contentType + "' non è coerente con l'estensione '." + ext + "'");
+                }
+            }
+        }
     }
 
     @Override

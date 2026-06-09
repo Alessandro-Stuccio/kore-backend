@@ -1,5 +1,6 @@
 package com.project.kore.dto.request;
 
+import com.project.kore.util.BusinessConstants;
 import jakarta.validation.constraints.*;
 
 /**
@@ -20,7 +21,8 @@ public record UserCreateRequestDTO(
         @NotBlank @Email String email,
         @NotBlank @Size(min = 2, max = 50) String firstName,
         @NotBlank @Size(min = 2, max = 50) String lastName,
-        @NotBlank @Size(min = 8, max = 100) String password,
+        @NotBlank @Size(min = BusinessConstants.MIN_PASSWORD_LENGTH, max = BusinessConstants.MAX_PASSWORD_LENGTH,
+                message = "La password deve avere tra {min} e {max} caratteri") String password,
         @NotBlank String role,
         @Min(1) Long assignedPTId,
         @Min(1) Long assignedNutritionistId,

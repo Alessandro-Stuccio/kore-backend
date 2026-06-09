@@ -3,6 +3,7 @@ package com.project.kore.service;
 import com.project.kore.exception.common.CustomResourceNotFoundException;
 import com.project.kore.model.Subscription;
 import com.project.kore.model.User;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.validation.annotation.Validated;
@@ -29,7 +30,7 @@ public interface SubscriptionService {
      * @param sub l'abbonamento da salvare
      * @return l'abbonamento salvato
      */
-    Subscription save(@NotNull Subscription sub);
+    Subscription save(@NotNull @Valid Subscription sub);
 
     /**
      * Cerca l'abbonamento attivo senza prendere lock.

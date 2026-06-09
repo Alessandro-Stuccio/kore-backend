@@ -1,7 +1,5 @@
 package com.project.kore.model;
 
-import com.project.kore.builder.ChatBuilder;
-import com.project.kore.builder.impl.ChatBuilderImpl;
 import com.project.kore.enums.ChatStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -18,6 +16,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -40,10 +39,12 @@ public class Chat {
     private Long id;
 
     // È il riferimento rispetto a cui ogni messaggio imposta il flag sentByUser1
+    @NotNull(message = "user1 è obbligatorio")
     @ManyToOne
     @JoinColumn(name = "user1_id", nullable = false, foreignKey = @ForeignKey(name = "fk_chat_user1_id"))
     private User user1;
 
+    @NotNull(message = "user2 è obbligatorio")
     @ManyToOne
     @JoinColumn(name = "user2_id", nullable = false, foreignKey = @ForeignKey(name = "fk_chat_user2_id"))
     private User user2;
@@ -90,10 +91,6 @@ public class Chat {
 
     public User getClosedBy() { return closedBy; }
     public void setClosedBy(User closedBy) { this.closedBy = closedBy; }
-
-    public static ChatBuilder builder() {
-        return new ChatBuilderImpl();
-    }
 
     @Override
     public boolean equals(Object o) {

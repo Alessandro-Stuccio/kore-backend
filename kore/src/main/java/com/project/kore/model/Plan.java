@@ -1,7 +1,5 @@
 package com.project.kore.model;
 
-import com.project.kore.builder.PlanBuilder;
-import com.project.kore.builder.impl.PlanBuilderImpl;
 import com.project.kore.enums.PlanDuration;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,6 +10,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 import java.util.Objects;
 
@@ -31,22 +33,30 @@ public class Plan {
     private Long id;
 
     // Nome univoco, es. "Basic Semestrale"
+    @NotBlank(message = "name non può essere vuoto")
     @Column(nullable = false)
     private String name;
 
+    @NotNull(message = "duration è obbligatorio")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PlanDuration duration;
 
     // Prezzo pieno e prezzo della singola rata mensile
+    @NotNull(message = "fullPrice è obbligatorio")
+    @Positive(message = "fullPrice deve essere maggiore di zero")
     @Column(nullable = false)
     private Double fullPrice;
 
+    @NotNull(message = "monthlyInstallmentPrice è obbligatorio")
+    @Positive(message = "monthlyInstallmentPrice deve essere maggiore di zero")
     @Column(nullable = false)
     private Double monthlyInstallmentPrice;
 
     // Crediti che il piano regala ogni mese, per tipo di professionista
+    @PositiveOrZero(message = "monthlyCreditsPT non può essere negativo")
     private int monthlyCreditsPT;
+    @PositiveOrZero(message = "monthlyCreditsNutri non può essere negativo")
     private int monthlyCreditsNutri;
 
     // Se false il piano sparisce dalla vetrina ma resta valido per chi è già abbonato;
@@ -79,10 +89,6 @@ public class Plan {
 
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
-
-    public static PlanBuilder builder() {
-        return new PlanBuilderImpl();
-    }
 
     @Override
     public boolean equals(Object o) {

@@ -121,12 +121,12 @@ public class ProfessionalFacadeImpl implements ProfessionalFacade {
                     LocalDateTime endSlot = startSlot.plusMinutes(30);
 
                     if (!slotService.slotExists(professional, startSlot)) {
-                        newSlots.add(Slot.builder()
-                                .professional(professional)
-                                .startTime(startSlot)
-                                .endTime(endSlot)
-                                .bookedBy(null)
-                                .build());
+                        Slot slot = new Slot();
+                        slot.setProfessional(professional);
+                        slot.setStartTime(startSlot);
+                        slot.setEndTime(endSlot);
+                        slot.setBookedBy(null);
+                        newSlots.add(slot);
                     }
 
                     currentTime = currentTime.plusMinutes(30);

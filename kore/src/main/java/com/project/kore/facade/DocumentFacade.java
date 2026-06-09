@@ -5,7 +5,9 @@ import com.project.kore.dto.response.DocumentUploadResponse;
 import com.project.kore.dto.response.UpdatedNotesResponse;
 import com.project.kore.exception.document.InvalidFileException;
 import com.project.kore.model.Document;
+import jakarta.validation.constraints.Size;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.List;
 /**
  * Upload, download e gestione documenti, con controllo accessi su ogni operazione.
  */
+@Validated
 public interface DocumentFacade {
 
     /**
@@ -84,5 +87,5 @@ public interface DocumentFacade {
      * @return i dati aggiornati delle note
      * @throws AccessDeniedException se il chiamante non è autorizzato a modificare le note
      */
-    UpdatedNotesResponse updateNotes(Long id, String notes, Long callerId);
+    UpdatedNotesResponse updateNotes(Long id, @Size(max = 1000) String notes, Long callerId);
 }

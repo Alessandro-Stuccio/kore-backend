@@ -4,7 +4,6 @@ import com.project.kore.dto.request.PlanRequest;
 import com.project.kore.dto.response.SubscriptionResponse;
 import com.project.kore.facade.UserFacade;
 import com.project.kore.model.User;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,7 +33,7 @@ public class SubscriptionController {
      * @return 200 con i dati dell'abbonamento attivato
      */
     @PostMapping("/activate")
-    public ResponseEntity<SubscriptionResponse> activateSubscription(@Valid @RequestBody PlanRequest request,
+    public ResponseEntity<SubscriptionResponse> activateSubscription(@RequestBody PlanRequest request,
                                                                        @AuthenticationPrincipal User user) {
         return ResponseEntity.ok(userFacade.activateSubscription(request, user.getId()));
     }

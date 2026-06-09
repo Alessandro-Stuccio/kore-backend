@@ -168,13 +168,12 @@ public class ModeratorFacadeImpl implements ModeratorFacade {
             throw new ResourceAlreadyExistsException("Utente", "email", email);
         }
 
-        User user = User.builder()
-                .email(email)
-                .firstName(firstName)
-                .lastName(lastName)
-                .password(userService.encodePassword(password))
-                .role(targetRole)
-                .build();
+        User user = new User();
+        user.setEmail(email);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setPassword(userService.encodePassword(password));
+        user.setRole(targetRole);
 
         if (targetRole == Role.CLIENT) {
             if (request.assignedPTId() != null) {

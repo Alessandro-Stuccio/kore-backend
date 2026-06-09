@@ -1,7 +1,5 @@
 package com.project.kore.model;
 
-import com.project.kore.builder.WeeklyScheduleBuilder;
-import com.project.kore.builder.impl.WeeklyScheduleBuilderImpl;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -15,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -35,17 +34,21 @@ public class WeeklySchedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "professional è obbligatorio")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "professional_id", nullable = false, foreignKey = @ForeignKey(name = "fk_weekly_schedule_professional_id"))
     private User professional;
 
+    @NotNull(message = "dayOfWeek è obbligatorio")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private DayOfWeek dayOfWeek;
 
+    @NotNull(message = "startTime è obbligatorio")
     @Column(nullable = false)
     private LocalTime startTime;
 
+    @NotNull(message = "endTime è obbligatorio")
     @Column(nullable = false)
     private LocalTime endTime;
 
@@ -65,10 +68,6 @@ public class WeeklySchedule {
 
     public LocalTime getEndTime() { return endTime; }
     public void setEndTime(LocalTime endTime) { this.endTime = endTime; }
-
-    public static WeeklyScheduleBuilder builder() {
-        return new WeeklyScheduleBuilderImpl();
-    }
 
     @Override
     public boolean equals(Object o) {

@@ -47,18 +47,6 @@ public class AuditLog {
 
     public AuditLog() {}
 
-    private AuditLog(Long id, LocalDateTime loggedAt, String userIdentity, String httpMethod,
-                     String httpPath, String ipAddress, Integer httpStatus, String requestBody) {
-        this.id = id;
-        this.loggedAt = loggedAt;
-        this.userIdentity = userIdentity;
-        this.httpMethod = httpMethod;
-        this.httpPath = httpPath;
-        this.ipAddress = ipAddress;
-        this.httpStatus = httpStatus;
-        this.requestBody = requestBody;
-    }
-
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -83,10 +71,6 @@ public class AuditLog {
     public String getRequestBody() { return requestBody; }
     public void setRequestBody(String requestBody) { this.requestBody = requestBody; }
 
-    public static Builder builder() {
-        return new Builder();
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -103,29 +87,5 @@ public class AuditLog {
     @Override
     public String toString() {
         return "AuditLog{id=" + id + ", loggedAt=" + loggedAt + ", userIdentity='" + userIdentity + "', httpMethod='" + httpMethod + "', httpPath='" + httpPath + "', httpStatus=" + httpStatus + "}";
-    }
-
-    public static class Builder {
-        private Long id;
-        private LocalDateTime loggedAt;
-        private String userIdentity;
-        private String httpMethod;
-        private String httpPath;
-        private String ipAddress;
-        private Integer httpStatus;
-        private String requestBody;
-
-        public Builder id(Long id) { this.id = id; return this; }
-        public Builder loggedAt(LocalDateTime loggedAt) { this.loggedAt = loggedAt; return this; }
-        public Builder userIdentity(String userIdentity) { this.userIdentity = userIdentity; return this; }
-        public Builder httpMethod(String httpMethod) { this.httpMethod = httpMethod; return this; }
-        public Builder httpPath(String httpPath) { this.httpPath = httpPath; return this; }
-        public Builder ipAddress(String ipAddress) { this.ipAddress = ipAddress; return this; }
-        public Builder httpStatus(Integer httpStatus) { this.httpStatus = httpStatus; return this; }
-        public Builder requestBody(String requestBody) { this.requestBody = requestBody; return this; }
-
-        public AuditLog build() {
-            return new AuditLog(id, loggedAt, userIdentity, httpMethod, httpPath, ipAddress, httpStatus, requestBody);
-        }
     }
 }

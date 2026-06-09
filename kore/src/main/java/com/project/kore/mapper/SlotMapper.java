@@ -49,11 +49,11 @@ public class SlotMapper {
      * @return il nuovo slot libero
      */
     public Slot toEntity(SlotDTO dto, User professional) {
-        return Slot.builder()
-                .professional(professional)
-                .startTime(dto.getStartTime())
-                .endTime(dto.getEndTime())
-                .build();
+        Slot slot = new Slot();
+        slot.setProfessional(professional);
+        slot.setStartTime(dto.getStartTime());
+        slot.setEndTime(dto.getEndTime());
+        return slot;
     }
 
     /**

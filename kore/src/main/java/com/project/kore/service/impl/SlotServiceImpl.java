@@ -32,6 +32,13 @@ public class SlotServiceImpl implements SlotService {
 
     @Override
     public List<Slot> createSlots(List<Slot> slots) {
+        // Invariante relazionale ereditata dal vecchio SlotBuilder.build().
+        for (Slot slot : slots) {
+            if (slot.getStartTime() != null && slot.getEndTime() != null
+                    && !slot.getStartTime().isBefore(slot.getEndTime())) {
+                throw new IllegalArgumentException("startTime deve essere precedente a endTime");
+            }
+        }
         return slotRepository.saveAll(slots);
     }
 

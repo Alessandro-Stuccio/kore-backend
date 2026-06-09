@@ -4,12 +4,15 @@ import com.project.kore.dto.request.ReviewRequest;
 import com.project.kore.dto.response.ReviewResponse;
 import com.project.kore.exception.common.ResourceAlreadyExistsException;
 import com.project.kore.exception.review.ReviewNotAllowedException;
+import jakarta.validation.Valid;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
 /**
  * Gestione delle recensioni dei professionisti.
  */
+@Validated
 public interface ReviewFacade {
 
     /**
@@ -21,7 +24,7 @@ public interface ReviewFacade {
      * @throws ResourceAlreadyExistsException se il cliente ha già recensito quel professionista
      * @throws ReviewNotAllowedException       se il cliente non ha alcuna prenotazione con quel professionista
      */
-    ReviewResponse addReview(ReviewRequest request, Long userId);
+    ReviewResponse addReview(@Valid ReviewRequest request, Long userId);
 
     /**
      * Tutte le recensioni ricevute dal professionista.

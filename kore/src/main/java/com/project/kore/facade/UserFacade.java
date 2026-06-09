@@ -8,13 +8,16 @@ import com.project.kore.dto.response.ProfessionalSummaryDTO;
 import com.project.kore.dto.response.SubscriptionResponse;
 import com.project.kore.enums.Role;
 import com.project.kore.exception.common.ResourceAlreadyExistsException;
+import jakarta.validation.Valid;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
 /**
  * Profilo utente, dashboard del cliente e attivazione abbonamenti.
  */
+@Validated
 public interface UserFacade {
 
     /**
@@ -39,7 +42,7 @@ public interface UserFacade {
      * @param userId  id dell'utente
      * @param request dati di profilo aggiornati
      */
-    void updateProfile(Long userId, ProfileUpdateRequest request);
+    void updateProfile(Long userId, @Valid ProfileUpdateRequest request);
 
     /**
      * I clienti associati al professionista.
@@ -59,7 +62,7 @@ public interface UserFacade {
      * @throws AccessDeniedException          se l'utente non è un cliente
      * @throws ResourceAlreadyExistsException se l'utente ha già un abbonamento attivo
      */
-    SubscriptionResponse activateSubscription(PlanRequest request, Long userId);
+    SubscriptionResponse activateSubscription(@Valid PlanRequest request, Long userId);
 
     /**
      * Stato dell'abbonamento attivo dell'utente.

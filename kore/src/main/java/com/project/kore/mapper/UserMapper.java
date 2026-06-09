@@ -109,14 +109,14 @@ public class UserMapper {
             return null;
         }
 
-        return User.builder()
-                .firstName(request.firstName())
-                .lastName(request.lastName())
-                .email(request.email())
-                .password(request.password())
-                .profilePicture(request.profilePicture())
-                .role(Role.CLIENT)
-                .build();
+        User user = new User();
+        user.setFirstName(request.firstName());
+        user.setLastName(request.lastName());
+        user.setEmail(request.email());
+        user.setPassword(request.password());
+        user.setProfilePicture(request.profilePicture());
+        user.setRole(Role.CLIENT);
+        return user;
     }
 
     /**

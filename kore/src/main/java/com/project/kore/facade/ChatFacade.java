@@ -7,13 +7,16 @@ import com.project.kore.dto.response.ConversationPreviewResponse;
 import com.project.kore.exception.chat.ChatNotAllowedException;
 import com.project.kore.exception.common.CustomResourceNotFoundException;
 import com.project.kore.model.User;
+import jakarta.validation.Valid;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
 /**
  * Gestione delle chat, sia via WebSocket sia via REST.
  */
+@Validated
 public interface ChatFacade {
 
     /**
@@ -36,7 +39,7 @@ public interface ChatFacade {
      * @throws CustomResourceNotFoundException se la chat non esiste
      * @throws ChatNotAllowedException          se il mittente non è parte della chat
      */
-    ChatMessageResponse sendMessage(SendMessageRequest request, Long senderId);
+    ChatMessageResponse sendMessage(@Valid SendMessageRequest request, Long senderId);
 
     /**
      * Restituisce i messaggi della conversazione in modo paginato (pagina base 0).

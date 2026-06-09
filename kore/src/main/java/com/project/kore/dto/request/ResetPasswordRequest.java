@@ -1,5 +1,6 @@
 package com.project.kore.dto.request;
 
+import com.project.kore.util.BusinessConstants;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -14,6 +15,7 @@ public record ResetPasswordRequest(
         String token,
 
         @NotBlank(message = "La nuova password è obbligatoria")
-        @Size(min = 6, message = "La password deve avere almeno 6 caratteri")
+        @Size(min = BusinessConstants.MIN_PASSWORD_LENGTH, max = BusinessConstants.MAX_PASSWORD_LENGTH,
+                message = "La password deve avere tra {min} e {max} caratteri")
         String newPassword) {
 }

@@ -95,6 +95,7 @@ class SubscriptionSchedulerTest {
         when(subscriptionRepository.findByActiveTrue()).thenReturn(List.of(sub));
 
         LocalDate firstOfMonth = LocalDate.of(2025, 6, 1);
+        sub.setLastRenewalDate(firstOfMonth.minusMonths(1)); // rinnovo mensile dovuto: ultimo rinnovo un mese fa
 
         try (MockedStatic<LocalDate> mockedLocalDate = mockStatic(LocalDate.class, invocation -> {
             if (invocation.getMethod().getName().equals("now")) {
@@ -249,6 +250,8 @@ class SubscriptionSchedulerTest {
         when(subscriptionRepository.findByActiveTrue()).thenReturn(List.of(sub1, sub2));
 
         LocalDate firstOfMonth = LocalDate.of(2025, 6, 1);
+        sub1.setLastRenewalDate(firstOfMonth.minusMonths(1)); // rinnovo dovuto
+        sub2.setLastRenewalDate(firstOfMonth.minusMonths(1)); // rinnovo dovuto
 
         // sub1 will throw when save is called
         doThrow(new RuntimeException("DB error")).when(subscriptionRepository).save(sub1);
@@ -281,6 +284,8 @@ class SubscriptionSchedulerTest {
         when(subscriptionRepository.findByActiveTrue()).thenReturn(List.of(sub1, sub2));
 
         LocalDate firstOfMonth = LocalDate.of(2025, 7, 1);
+        sub1.setLastRenewalDate(firstOfMonth.minusMonths(1)); // rinnovo dovuto
+        sub2.setLastRenewalDate(firstOfMonth.minusMonths(1)); // rinnovo dovuto
 
         try (MockedStatic<LocalDate> mockedLocalDate = mockStatic(LocalDate.class, invocation -> {
             if (invocation.getMethod().getName().equals("now")) {

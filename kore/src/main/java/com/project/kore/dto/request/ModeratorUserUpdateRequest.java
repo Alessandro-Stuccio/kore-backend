@@ -1,5 +1,6 @@
 package com.project.kore.dto.request;
 
+import com.project.kore.util.BusinessConstants;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 
@@ -22,6 +23,7 @@ public record ModeratorUserUpdateRequest(
         @Size(min = 1, max = 100, message = "Il cognome deve essere tra 1 e 100 caratteri")
         String lastName,
 
-        @Size(min = 6, message = "La password deve avere almeno 6 caratteri")
+        @Size(min = BusinessConstants.MIN_PASSWORD_LENGTH, max = BusinessConstants.MAX_PASSWORD_LENGTH,
+                message = "La password deve avere tra {min} e {max} caratteri")
         String password
 ) {}

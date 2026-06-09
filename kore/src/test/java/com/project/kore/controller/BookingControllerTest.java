@@ -28,7 +28,11 @@ class BookingControllerTest {
     @Test
     @DisplayName("createBooking — restituisce 200 con la prenotazione")
     void createBooking() {
-        User mockUser = User.builder().id(1L).email("test@test.com").password("testpass").role(Role.CLIENT).build();
+        User mockUser = new User();
+        mockUser.setId(1L);
+        mockUser.setEmail("test@test.com");
+        mockUser.setPassword("testpass");
+        mockUser.setRole(Role.CLIENT);
         BookingRequest req = new BookingRequest(10L);
         BookingResponse resp = BookingResponse.builder().id(1L).status(BookingStatus.CONFIRMED).build();
         when(bookingFacade.createBooking(req, 1L)).thenReturn(resp);

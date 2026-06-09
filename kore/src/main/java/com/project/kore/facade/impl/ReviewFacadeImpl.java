@@ -54,12 +54,11 @@ public class ReviewFacadeImpl implements ReviewFacade {
                     "Puoi recensire solo professionisti con cui hai avuto un rapporto formale.");
         }
 
-        Review review = Review.builder()
-                .client(user)
-                .professional(professional)
-                .rating(request.rating())
-                .comment(request.comment())
-                .build();
+        Review review = new Review();
+        review.setClient(user);
+        review.setProfessional(professional);
+        review.setRating(request.rating());
+        review.setComment(request.comment());
 
         return reviewMapper.toResponse(reviewService.save(review));
     }

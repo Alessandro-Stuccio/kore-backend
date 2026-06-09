@@ -4,6 +4,7 @@ import com.project.kore.exception.booking.SlotAlreadyBookedException;
 import com.project.kore.exception.common.CustomResourceNotFoundException;
 import com.project.kore.model.Slot;
 import com.project.kore.model.User;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -26,7 +27,7 @@ public interface SlotService {
      * @param slots gli slot da salvare; non nullo e non vuoto
      * @return gli slot salvati, con id valorizzato
      */
-    List<Slot> createSlots(@NotNull @NotEmpty List<Slot> slots);
+    List<Slot> createSlots(@NotNull @NotEmpty List<@Valid Slot> slots);
 
     /**
      * Slot ancora liberi del professionista.

@@ -6,7 +6,6 @@ import com.project.kore.dto.response.ClientBasicInfoResponse;
 import com.project.kore.dto.response.ConversationPreviewResponse;
 import com.project.kore.facade.ChatFacade;
 import com.project.kore.model.User;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,7 +55,7 @@ public class ChatController {
      */
     @PostMapping("/send")
     public ResponseEntity<ChatMessageResponse> sendMessage(@AuthenticationPrincipal User user,
-                                                            @Valid @RequestBody SendMessageRequest request) {
+                                                            @RequestBody SendMessageRequest request) {
         return ResponseEntity.ok(chatFacade.sendMessage(request, user.getId()));
     }
 

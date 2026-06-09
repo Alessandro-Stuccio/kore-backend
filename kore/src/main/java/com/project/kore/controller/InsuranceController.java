@@ -9,7 +9,6 @@ import com.project.kore.dto.response.UserResponse;
 import com.project.kore.facade.InsuranceFacade;
 import com.project.kore.model.Document;
 import com.project.kore.model.User;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -126,7 +125,7 @@ public class InsuranceController {
     @PutMapping("/policies/{id}/notes")
     public ResponseEntity<UpdatedNotesResponse> updatePolicyNotes(
             @PathVariable Long id,
-            @Valid @RequestBody UpdateNotesRequest body) {
+            @RequestBody UpdateNotesRequest body) {
         return ResponseEntity.ok(insuranceFacade.updatePolicyNotes(id, body.notes()));
     }
 }

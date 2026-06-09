@@ -1,8 +1,7 @@
 package com.project.kore.model;
 
-import com.project.kore.builder.UserBuilder;
-import com.project.kore.builder.impl.UserBuilderImpl;
 import com.project.kore.enums.Role;
+import com.project.kore.util.BusinessConstants;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -17,6 +16,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
@@ -48,6 +50,8 @@ public class User implements UserDetails {
     private Integer version;
 
     // L'email è anche lo username: deve restare univoca
+    @NotBlank(message = "email non può essere vuota")
+    @Pattern(regexp = BusinessConstants.EMAIL_REGEX, message = "email non è un indirizzo valido")
     @Column(nullable = false)
     private String email;
 
@@ -62,6 +66,7 @@ public class User implements UserDetails {
     private String firstName;
     private String lastName;
 
+    @NotNull(message = "role è obbligatorio")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
@@ -126,10 +131,6 @@ public class User implements UserDetails {
 
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
-
-    public static UserBuilder builder() {
-        return new UserBuilderImpl();
-    }
 
     // Spring Security vuole le authority nel formato ROLE_<RUOLO>
     @Override

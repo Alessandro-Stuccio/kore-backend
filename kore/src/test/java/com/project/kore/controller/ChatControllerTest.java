@@ -32,6 +32,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -116,16 +117,21 @@ class ChatControllerTest {
                 .andExpect(jsonPath("$.content").value("Ciao!"));
     }
 
+    // La validazione del contenuto non è più sul controller (niente @Valid) ma sul facade
+    // (ChatFacade.sendMessage(@Valid SendMessageRequest), classe @Validated) e, in difesa, sull'entity
+    // Message. Un contenuto vuoto viola @NotBlank → ConstraintViolationException → 400. Qui copriamo il vincolo.
     @Test
-    @DisplayName("POST /api/chat/send — 400 quando il contenuto del messaggio è vuoto")
-    void sendMessage_blankContent_returns400() throws Exception {
-        SendMessageRequest req = new SendMessageRequest(42L, "");
+    @DisplayName("SendMessageRequest — contenuto vuoto viola @NotBlank (validato ora sul facade → 400)")
+    void sendMessage_blankContent_violatesConstraint() {
+        try (jakarta.validation.ValidatorFactory factory = jakarta.validation.Validation.buildDefaultValidatorFactory()) {
+            jakarta.validation.Validator validator = factory.getValidator();
+            SendMessageRequest req = new SendMessageRequest(42L, "");
 
-        mockMvc.perform(post("/api/chat/send")
-                        .with(withClientUser)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req)))
-                .andExpect(status().isBadRequest());
+            var violations = validator.validate(req);
+
+            assertThat(violations).extracting(v -> v.getPropertyPath().toString())
+                    .contains("content");
+        }
     }
 
     // ------------------------------------------------------------------ GET /api/chat/conversation/{chatId}

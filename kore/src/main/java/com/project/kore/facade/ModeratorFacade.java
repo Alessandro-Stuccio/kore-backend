@@ -6,13 +6,17 @@ import com.project.kore.dto.response.SubscriptionResponse;
 import com.project.kore.dto.response.UserResponse;
 import com.project.kore.exception.common.ResourceAlreadyExistsException;
 import com.project.kore.model.User;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
 /**
  * Operazioni del Moderatore: gestione utenti, abbonamenti e chat.
  */
+@Validated
 public interface ModeratorFacade {
 
     /**
@@ -47,7 +51,7 @@ public interface ModeratorFacade {
      * @throws ResourceAlreadyExistsException se l'email è già in uso
      * @throws IllegalArgumentException       se un dato della richiesta non è valido (es. frequenza di pagamento)
      */
-    UserResponse createUser(UserCreateRequestDTO request, User user);
+    UserResponse createUser(@Valid UserCreateRequestDTO request, User user);
 
     /**
      * Aggiorna l'utente indicato, verificando i permessi del moderatore.
@@ -60,7 +64,7 @@ public interface ModeratorFacade {
      * @throws ResourceAlreadyExistsException se la nuova email è già in uso
      * @throws IllegalArgumentException       se un dato della richiesta non è valido
      */
-    UserResponse updateUser(Long id, ModeratorUserUpdateRequest request, User user);
+    UserResponse updateUser(Long id, @Valid ModeratorUserUpdateRequest request, User user);
 
     /**
      * Elimina l'utente indicato, verificando i permessi del moderatore.
@@ -80,5 +84,5 @@ public interface ModeratorFacade {
      * @return i dati dell'abbonamento aggiornato
      * @throws IllegalArgumentException se uno dei valori di crediti è negativo
      */
-    SubscriptionResponse updateSubscriptionCredits(Long id, int pt, int nutri);
+    SubscriptionResponse updateSubscriptionCredits(Long id, @Min(0) int pt, @Min(0) int nutri);
 }

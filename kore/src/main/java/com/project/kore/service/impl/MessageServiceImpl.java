@@ -6,32 +6,43 @@ import com.project.kore.model.Message;
 import com.project.kore.model.User;
 import com.project.kore.repository.MessageRepository;
 import com.project.kore.service.MessageService;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 /** Persistenza e lettura dei messaggi di chat. */
 @Service
 public class MessageServiceImpl implements MessageService {
 
     private final MessageRepository messageRepository;
+    private final Validator validator;
 
-    public MessageServiceImpl(MessageRepository messageRepository) {
+    public MessageServiceImpl(MessageRepository messageRepository, Validator validator) {
         this.messageRepository = messageRepository;
+        this.validator = validator;
     }
 
     // Il mittente non si memorizza direttamente: si tiene solo il flag sentByUser1, ricavato qui.
+    // Il messaggio si salva con repository.save diretto (non passa da un save(@Valid Message)),
+    // quindi validiamo a mano la forma dell'entity prima di persisterla.
     @Override
     public Message saveMessage(Chat chat, User sender, String content) {
         boolean sentByUser1 = chat.getUser1().getId().equals(sender.getId());
-        Message message = Message.builder()
-                .chat(chat)
-                .sentByUser1(sentByUser1)
-                .content(content)
-                .timeStamp(LocalDateTime.now())
-                .build();
+        Message message = new Message();
+        message.setChat(chat);
+        message.setSentByUser1(sentByUser1);
+        message.setContent(content);
+        message.setTimeStamp(LocalDateTime.now());
+        Set<ConstraintViolation<Message>> violations = validator.validate(message);
+        if (!violations.isEmpty()) {
+            throw new ConstraintViolationException(violations);
+        }
         return messageRepository.save(message);
     }
 

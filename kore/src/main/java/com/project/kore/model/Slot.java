@@ -1,9 +1,8 @@
 package com.project.kore.model;
 
-import com.project.kore.builder.SlotBuilder;
-import com.project.kore.builder.impl.SlotBuilderImpl;
 import com.project.kore.enums.BookingStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -30,14 +29,17 @@ public class Slot {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "professional è obbligatorio")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "professional_id", nullable = false, foreignKey = @ForeignKey(name = "fk_slot_professional_id"))
     private User professional;
 
     // start ed end distano sempre 30 minuti
+    @NotNull(message = "startTime è obbligatorio")
     @Column(nullable = false)
     private LocalDateTime startTime;
 
+    @NotNull(message = "endTime è obbligatorio")
     @Column(nullable = false)
     private LocalDateTime endTime;
 
@@ -94,10 +96,6 @@ public class Slot {
 
     public LocalDateTime getBookedAt() { return bookedAt; }
     public void setBookedAt(LocalDateTime bookedAt) { this.bookedAt = bookedAt; }
-
-    public static SlotBuilder builder() {
-        return new SlotBuilderImpl();
-    }
 
     @Override
     public boolean equals(Object o) {

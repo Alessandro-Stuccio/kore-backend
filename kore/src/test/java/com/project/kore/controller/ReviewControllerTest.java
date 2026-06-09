@@ -30,7 +30,11 @@ class ReviewControllerTest {
     @Test
     @DisplayName("addReview — restituisce 200 con la recensione creata")
     void addReview() {
-        User mockUser = User.builder().id(1L).email("test@test.com").password("testpass").role(Role.CLIENT).build();
+        User mockUser = new User();
+        mockUser.setId(1L);
+        mockUser.setEmail("test@test.com");
+        mockUser.setPassword("testpass");
+        mockUser.setRole(Role.CLIENT);
         ReviewRequest req = new ReviewRequest(2L, 5, null);
         ReviewResponse resp = ReviewResponse.builder().rating(5).authorName("Mario").build();
         when(reviewFacade.addReview(req, 1L)).thenReturn(resp);
@@ -55,7 +59,11 @@ class ReviewControllerTest {
     @Test
     @DisplayName("canReview — true quando può recensire e non ha ancora recensito")
     void canReview_canReview() {
-        User mockUser = User.builder().id(1L).email("test@test.com").password("testpass").role(Role.CLIENT).build();
+        User mockUser = new User();
+        mockUser.setId(1L);
+        mockUser.setEmail("test@test.com");
+        mockUser.setPassword("testpass");
+        mockUser.setRole(Role.CLIENT);
         when(reviewFacade.hasClientReviewed(1L, 2L)).thenReturn(false);
         when(reviewFacade.canClientReview(1L, 2L)).thenReturn(true);
 
@@ -68,7 +76,11 @@ class ReviewControllerTest {
     @Test
     @DisplayName("canReview — false quando ha già recensito")
     void canReview_alreadyReviewed() {
-        User mockUser = User.builder().id(1L).email("test@test.com").password("testpass").role(Role.CLIENT).build();
+        User mockUser = new User();
+        mockUser.setId(1L);
+        mockUser.setEmail("test@test.com");
+        mockUser.setPassword("testpass");
+        mockUser.setRole(Role.CLIENT);
         when(reviewFacade.hasClientReviewed(1L, 2L)).thenReturn(true);
 
         ResponseEntity<Map<String, Object>> response = reviewController.canReview(mockUser, 2L);

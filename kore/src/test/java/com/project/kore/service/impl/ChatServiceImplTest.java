@@ -5,6 +5,7 @@ import com.project.kore.exception.common.CustomResourceNotFoundException;
 import com.project.kore.model.Chat;
 import com.project.kore.model.User;
 import com.project.kore.repository.ChatRepository;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,9 @@ class ChatServiceImplTest {
 
     @Mock
     private ChatRepository chatRepository;
+
+    @Mock
+    private Validator validator;
 
     @InjectMocks
     private ChatServiceImpl chatService;

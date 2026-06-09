@@ -1,6 +1,7 @@
 package com.project.kore.service;
 
 import com.project.kore.exception.common.CustomResourceNotFoundException;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.validation.annotation.Validated;
@@ -41,7 +42,7 @@ public interface PlanService {
      * @param plan il piano da creare
      * @return il piano salvato
      */
-    Plan createPlan(@NotNull Plan plan);
+    Plan createPlan(@NotNull @Valid Plan plan);
 
     /**
      * Attiva o disabilita un piano. È un soft-disable: il record resta in DB.

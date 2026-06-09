@@ -7,7 +7,9 @@ import com.project.kore.dto.response.UpdatedNotesResponse;
 import com.project.kore.dto.response.UserResponse;
 import com.project.kore.exception.document.InvalidFileException;
 import com.project.kore.model.Document;
+import jakarta.validation.constraints.Size;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -15,6 +17,7 @@ import java.util.List;
 /**
  * Operazioni dell'Insurance Manager: gestione polizze e visibilità sui clienti.
  */
+@Validated
 public interface InsuranceFacade {
 
     /**
@@ -92,5 +95,5 @@ public interface InsuranceFacade {
      * @return i dati aggiornati delle note
      * @throws AccessDeniedException se il documento non è una polizza assicurativa
      */
-    UpdatedNotesResponse updatePolicyNotes(Long documentId, String notes);
+    UpdatedNotesResponse updatePolicyNotes(Long documentId, @Size(max = 1000) String notes);
 }

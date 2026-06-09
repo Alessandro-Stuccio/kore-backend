@@ -4,7 +4,6 @@ import com.project.kore.dto.request.ReviewRequest;
 import com.project.kore.dto.response.ReviewResponse;
 import com.project.kore.facade.ReviewFacade;
 import com.project.kore.model.User;
-import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +40,7 @@ public class ReviewController {
      * @return 200 con la recensione registrata
      */
     @PostMapping
-    public ResponseEntity<ReviewResponse> addReview(@Valid @RequestBody ReviewRequest request,
+    public ResponseEntity<ReviewResponse> addReview(@RequestBody ReviewRequest request,
                                                      @AuthenticationPrincipal User user) {
         log.info("Aggiunta recensione per professionista {} da utente {}", request.professionalId(), user.getId());
         return ResponseEntity.ok(reviewFacade.addReview(request, user.getId()));

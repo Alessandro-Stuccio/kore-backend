@@ -53,14 +53,14 @@ public class PlanMapper {
      */
     public Plan toPlan(PlanCreateRequestDTO request) {
         PlanDuration duration = PlanDuration.valueOf(request.duration());
-        return Plan.builder()
-                .name(request.name())
-                .duration(duration)
-                .fullPrice(request.fullPrice())
-                .monthlyInstallmentPrice(request.monthlyInstallmentPrice())
-                .monthlyCreditsPT(request.monthlyCreditsPT() != null ? request.monthlyCreditsPT() : 0)
-                .monthlyCreditsNutri(request.monthlyCreditsNutri() != null ? request.monthlyCreditsNutri() : 0)
-                .build();
+        Plan plan = new Plan();
+        plan.setName(request.name());
+        plan.setDuration(duration);
+        plan.setFullPrice(request.fullPrice());
+        plan.setMonthlyInstallmentPrice(request.monthlyInstallmentPrice());
+        plan.setMonthlyCreditsPT(request.monthlyCreditsPT() != null ? request.monthlyCreditsPT() : 0);
+        plan.setMonthlyCreditsNutri(request.monthlyCreditsNutri() != null ? request.monthlyCreditsNutri() : 0);
+        return plan;
     }
 
     /**

@@ -7,7 +7,6 @@ import com.project.kore.dto.response.UpdatedNotesResponse;
 import com.project.kore.facade.DocumentFacade;
 import com.project.kore.model.Document;
 import com.project.kore.model.User;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -127,7 +126,7 @@ public class DocumentController {
     @PutMapping("/{id}/notes")
     public ResponseEntity<UpdatedNotesResponse> updateNotes(
             @PathVariable Long id,
-            @Valid @RequestBody UpdateNotesRequest body,
+            @RequestBody UpdateNotesRequest body,
             @AuthenticationPrincipal User caller) {
         return ResponseEntity.ok(documentFacade.updateNotes(id, body.notes(), caller.getId()));
     }

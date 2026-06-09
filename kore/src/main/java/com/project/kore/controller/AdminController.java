@@ -4,7 +4,6 @@ import com.project.kore.dto.request.PlanCreateRequestDTO;
 import com.project.kore.dto.response.PlanResponseDTO;
 import com.project.kore.dto.response.stats.AdminStatsResponse;
 import com.project.kore.facade.AdminFacade;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +28,7 @@ public class AdminController {
      * @return 200 con il piano creato
      */
     @PostMapping("/plans")
-    public ResponseEntity<PlanResponseDTO> createPlan(@Valid @RequestBody PlanCreateRequestDTO request) {
+    public ResponseEntity<PlanResponseDTO> createPlan(@RequestBody PlanCreateRequestDTO request) {
         return ResponseEntity.ok(adminFacade.createPlan(request));
     }
 
@@ -42,7 +41,7 @@ public class AdminController {
      */
     @PutMapping("/plans/{id}")
     public ResponseEntity<PlanResponseDTO> updatePlan(@PathVariable Long id,
-            @Valid @RequestBody PlanCreateRequestDTO request) {
+            @RequestBody PlanCreateRequestDTO request) {
         return ResponseEntity.ok(adminFacade.updatePlan(id, request));
     }
 

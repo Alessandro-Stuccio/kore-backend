@@ -9,7 +9,6 @@ import com.project.kore.facade.UserFacade;
 import com.project.kore.model.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -62,7 +61,7 @@ public class UserController {
      * @return 200 senza corpo
      */
     @PutMapping("/profile")
-    public ResponseEntity<Void> updateProfile(@AuthenticationPrincipal User user, @Valid @RequestBody ProfileUpdateRequest request) {
+    public ResponseEntity<Void> updateProfile(@AuthenticationPrincipal User user, @RequestBody ProfileUpdateRequest request) {
         userFacade.updateProfile(user.getId(), request);
         return ResponseEntity.ok().build();
     }

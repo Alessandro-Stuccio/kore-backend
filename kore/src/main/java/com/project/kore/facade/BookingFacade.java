@@ -6,10 +6,13 @@ import com.project.kore.exception.booking.BookingCancellationException;
 import com.project.kore.exception.booking.SlotAlreadyBookedException;
 import com.project.kore.exception.booking.SubscriptionExpiredException;
 import com.project.kore.exception.common.BusinessLogicException;
+import jakarta.validation.Valid;
+import org.springframework.validation.annotation.Validated;
 
 /**
  * Prenotazione e cancellazione di slot.
  */
+@Validated
 public interface BookingFacade {
 
     /**
@@ -24,7 +27,7 @@ public interface BookingFacade {
      * @throws SubscriptionExpiredException  se l'abbonamento è scaduto o privo di crediti
      * @throws IllegalStateException         se l'aggiornamento dei crediti fallisce per conflitto concorrente
      */
-    BookingResponse createBooking(BookingRequest request, Long userId);
+    BookingResponse createBooking(@Valid BookingRequest request, Long userId);
 
     /**
      * Annulla una prenotazione esistente dell'utente. Il credito viene riaccreditato solo se si

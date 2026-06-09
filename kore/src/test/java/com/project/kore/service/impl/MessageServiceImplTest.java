@@ -5,6 +5,7 @@ import com.project.kore.model.Chat;
 import com.project.kore.model.Message;
 import com.project.kore.model.User;
 import com.project.kore.repository.MessageRepository;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,9 @@ class MessageServiceImplTest {
 
     @Mock
     private MessageRepository messageRepository;
+
+    @Mock
+    private Validator validator;
 
     @InjectMocks
     private MessageServiceImpl messageService;
