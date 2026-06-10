@@ -1,7 +1,7 @@
 package com.project.kore.facade;
 
 import com.project.kore.dto.request.ModeratorUserUpdateRequest;
-import com.project.kore.dto.request.UserCreateRequestDTO;
+import com.project.kore.dto.request.UserCreateRequest;
 import com.project.kore.dto.response.SubscriptionResponse;
 import com.project.kore.dto.response.UserResponse;
 import com.project.kore.exception.common.ResourceAlreadyExistsException;
@@ -51,7 +51,7 @@ public interface ModeratorFacade {
      * @throws ResourceAlreadyExistsException se l'email è già in uso
      * @throws IllegalArgumentException       se un dato della richiesta non è valido (es. frequenza di pagamento)
      */
-    UserResponse createUser(@Valid UserCreateRequestDTO request, User user);
+    UserResponse createUser(@Valid UserCreateRequest request, User user);
 
     /**
      * Aggiorna l'utente indicato, verificando i permessi del moderatore.

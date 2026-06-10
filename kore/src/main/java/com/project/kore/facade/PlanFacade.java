@@ -1,6 +1,6 @@
 package com.project.kore.facade;
 
-import com.project.kore.dto.response.PlanResponseDTO;
+import com.project.kore.dto.response.PlanResponse;
 
 import java.util.List;
 
@@ -14,5 +14,5 @@ public interface PlanFacade {
      *
      * @return i piani attualmente attivi
      */
-    List<PlanResponseDTO> getAllPlans();
+    List<PlanResponse> getAllPlans();
 }

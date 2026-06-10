@@ -1,6 +1,6 @@
 package com.project.kore.mapper;
 
-import com.project.kore.dto.response.SlotDTO;
+import com.project.kore.dto.response.SlotResponse;
 import com.project.kore.enums.Role;
 import com.project.kore.model.Slot;
 import com.project.kore.model.User;
@@ -52,8 +52,8 @@ class SlotMapperTest {
         return slot;
     }
 
-    private SlotDTO buildSlotDTO(Long id, LocalDateTime start, Long professionalId) {
-        return SlotDTO.builder()
+    private SlotResponse buildSlotDTO(Long id, LocalDateTime start, Long professionalId) {
+        return SlotResponse.builder()
                 .id(id)
                 .startTime(start)
                 .endTime(start.plusMinutes(30))
@@ -79,7 +79,7 @@ class SlotMapperTest {
         LocalDateTime start = LocalDateTime.of(2025, 6, 1, 9, 0);
         Slot slot = buildSlot(50L, professional, null, start);
 
-        SlotDTO dto = slotMapper.toDto(slot);
+        SlotResponse dto = slotMapper.toDto(slot);
 
         assertThat(dto.getId()).isEqualTo(50L);
         assertThat(dto.getStartTime()).isEqualTo(start);
@@ -93,7 +93,7 @@ class SlotMapperTest {
         User professional = buildProfessional(10L);
         Slot slot = buildSlot(51L, professional, null, LocalDateTime.now());
 
-        SlotDTO dto = slotMapper.toDto(slot);
+        SlotResponse dto = slotMapper.toDto(slot);
 
         assertThat(dto.isAvailable()).isTrue();
     }
@@ -105,7 +105,7 @@ class SlotMapperTest {
         User client = buildClient(1L);
         Slot slot = buildSlot(52L, professional, client, LocalDateTime.now());
 
-        SlotDTO dto = slotMapper.toDto(slot);
+        SlotResponse dto = slotMapper.toDto(slot);
 
         assertThat(dto.isAvailable()).isFalse();
     }
@@ -120,7 +120,7 @@ class SlotMapperTest {
         Slot slot1 = buildSlot(1L, professional, null, base);
         Slot slot2 = buildSlot(2L, professional, null, base.plusHours(1));
 
-        List<SlotDTO> result = slotMapper.toDtoList(List.of(slot1, slot2));
+        List<SlotResponse> result = slotMapper.toDtoList(List.of(slot1, slot2));
 
         assertThat(result).hasSize(2);
         assertThat(result.get(0).getId()).isEqualTo(1L);
@@ -140,7 +140,7 @@ class SlotMapperTest {
     void toEntity_mapsFields() {
         User professional = buildProfessional(10L);
         LocalDateTime start = LocalDateTime.of(2025, 6, 1, 10, 0);
-        SlotDTO dto = buildSlotDTO(null, start, 10L);
+        SlotResponse dto = buildSlotDTO(null, start, 10L);
 
         Slot slot = slotMapper.toEntity(dto, professional);
 
@@ -154,7 +154,7 @@ class SlotMapperTest {
     void toEntity_bookedByIsNull() {
         User professional = buildProfessional(10L);
         LocalDateTime start = LocalDateTime.of(2025, 6, 1, 10, 0);
-        SlotDTO dto = buildSlotDTO(null, start, 10L);
+        SlotResponse dto = buildSlotDTO(null, start, 10L);
 
         Slot slot = slotMapper.toEntity(dto, professional);
 
@@ -168,8 +168,8 @@ class SlotMapperTest {
     void toEntityList_mapsAllWithSameProfessional() {
         User professional = buildProfessional(10L);
         LocalDateTime base = LocalDateTime.of(2025, 6, 1, 9, 0);
-        SlotDTO dto1 = buildSlotDTO(null, base, 10L);
-        SlotDTO dto2 = buildSlotDTO(null, base.plusHours(1), 10L);
+        SlotResponse dto1 = buildSlotDTO(null, base, 10L);
+        SlotResponse dto2 = buildSlotDTO(null, base.plusHours(1), 10L);
 
         List<Slot> slots = slotMapper.toEntityList(List.of(dto1, dto2), professional);
 

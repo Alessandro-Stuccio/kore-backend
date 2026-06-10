@@ -2,8 +2,8 @@ package com.project.kore.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.project.kore.dto.request.PlanCreateRequestDTO;
-import com.project.kore.dto.response.PlanResponseDTO;
+import com.project.kore.dto.request.PlanCreateRequest;
+import com.project.kore.dto.response.PlanResponse;
 import com.project.kore.dto.response.stats.AdminStatsResponse;
 import com.project.kore.enums.Role;
 import com.project.kore.exception.GlobalExceptionHandler;
@@ -77,13 +77,13 @@ class AdminControllerTest {
     @Test
     @DisplayName("POST /api/admin/plans — 200 con piano creato")
     void createPlan_returns200() throws Exception {
-        PlanResponseDTO plan = PlanResponseDTO.builder()
+        PlanResponse plan = PlanResponse.builder()
                 .id(5L).name("Gold").duration("ANNUAL").fullPrice(299.0).monthlyInstallmentPrice(29.9)
                 .monthlyCreditsPT(2).monthlyCreditsNutri(2)
                 .build();
-        when(adminFacade.createPlan(any(PlanCreateRequestDTO.class))).thenReturn(plan);
+        when(adminFacade.createPlan(any(PlanCreateRequest.class))).thenReturn(plan);
 
-        PlanCreateRequestDTO req = new PlanCreateRequestDTO("Gold", "ANNUAL", 299.0, 29.9, 2, 2);
+        PlanCreateRequest req = new PlanCreateRequest("Gold", "ANNUAL", 299.0, 29.9, 2, 2);
 
         mockMvc.perform(post("/api/admin/plans")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -98,10 +98,10 @@ class AdminControllerTest {
     @Test
     @DisplayName("GET /api/admin/plans — 200 con tutti i piani (inclusi disabilitati)")
     void getAllPlans_returns200() throws Exception {
-        PlanResponseDTO active = PlanResponseDTO.builder()
+        PlanResponse active = PlanResponse.builder()
                 .id(1L).name("Basic").duration("SEMESTRALE").fullPrice(299.0).monthlyInstallmentPrice(59.0)
                 .monthlyCreditsPT(1).monthlyCreditsNutri(1).active(true).build();
-        PlanResponseDTO disabled = PlanResponseDTO.builder()
+        PlanResponse disabled = PlanResponse.builder()
                 .id(2L).name("Old").duration("ANNUALE").fullPrice(500.0).monthlyInstallmentPrice(45.0)
                 .monthlyCreditsPT(1).monthlyCreditsNutri(1).active(false).build();
         when(adminFacade.getAllPlansForAdmin()).thenReturn(List.of(active, disabled));
@@ -117,7 +117,7 @@ class AdminControllerTest {
     @Test
     @DisplayName("PATCH /api/admin/plans/{id}/disable — 200 con piano disabilitato")
     void disablePlan_returns200() throws Exception {
-        PlanResponseDTO plan = PlanResponseDTO.builder()
+        PlanResponse plan = PlanResponse.builder()
                 .id(5L).name("Gold").duration("ANNUALE").fullPrice(299.0).monthlyInstallmentPrice(29.9)
                 .monthlyCreditsPT(2).monthlyCreditsNutri(2).active(false).build();
         when(adminFacade.setPlanStatus(5L, false)).thenReturn(plan);
@@ -130,7 +130,7 @@ class AdminControllerTest {
     @Test
     @DisplayName("PATCH /api/admin/plans/{id}/enable — 200 con piano riabilitato")
     void enablePlan_returns200() throws Exception {
-        PlanResponseDTO plan = PlanResponseDTO.builder()
+        PlanResponse plan = PlanResponse.builder()
                 .id(5L).name("Gold").duration("ANNUALE").fullPrice(299.0).monthlyInstallmentPrice(29.9)
                 .monthlyCreditsPT(2).monthlyCreditsNutri(2).active(true).build();
         when(adminFacade.setPlanStatus(5L, true)).thenReturn(plan);

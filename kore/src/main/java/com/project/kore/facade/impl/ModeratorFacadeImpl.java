@@ -1,7 +1,7 @@
 package com.project.kore.facade.impl;
 
 import com.project.kore.dto.request.ModeratorUserUpdateRequest;
-import com.project.kore.dto.request.UserCreateRequestDTO;
+import com.project.kore.dto.request.UserCreateRequest;
 import com.project.kore.dto.response.SubscriptionResponse;
 import com.project.kore.dto.response.UserResponse;
 import com.project.kore.enums.PaymentFrequency;
@@ -93,7 +93,7 @@ public class ModeratorFacadeImpl implements ModeratorFacade {
      */
     @Override
     @Transactional
-    public UserResponse createUser(UserCreateRequestDTO request,User user) {
+    public UserResponse createUser(UserCreateRequest request, User user) {
         Role targetRole = Role.valueOf(request.role());
         if (!Role.getManagebleRoles(user.getRole()).contains(targetRole)) {
             throw new AccessDeniedException(
@@ -154,7 +154,7 @@ public class ModeratorFacadeImpl implements ModeratorFacade {
         return subscriptionMapper.toResponse(subscriptionService.updateSubscriptionCredits(id, pt, nutri));
     }
 
-    protected UserResponse buildAndSaveUser(UserCreateRequestDTO request, Role targetRole) {
+    protected UserResponse buildAndSaveUser(UserCreateRequest request, Role targetRole) {
         String email = request.email();
         String firstName = request.firstName();
         String lastName = request.lastName();

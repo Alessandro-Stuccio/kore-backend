@@ -2,7 +2,7 @@ package com.project.kore.mapper;
 
 import com.project.kore.dto.request.RegisterRequest;
 import com.project.kore.dto.response.ClientBasicInfoResponse;
-import com.project.kore.dto.response.ProfessionalSummaryDTO;
+import com.project.kore.dto.response.ProfessionalSummaryResponse;
 import com.project.kore.dto.response.UserResponse;
 import com.project.kore.enums.Role;
 import com.project.kore.model.User;
@@ -280,7 +280,7 @@ class UserMapperTest {
     void toProfessionalSummary_mapsFields() {
         User pro = buildUser(9L, "Giulia", "Marchi", "giulia@test.com", Role.NUTRITIONIST);
 
-        ProfessionalSummaryDTO summary = userMapper.toProfessionalSummary(pro);
+        ProfessionalSummaryResponse summary = userMapper.toProfessionalSummary(pro);
 
         assertThat(summary.getId()).isEqualTo(9L);
         assertThat(summary.getFullName()).isEqualTo("Giulia Marchi");

@@ -2,7 +2,7 @@ package com.project.kore.facade.impl;
 
 import com.project.kore.dto.request.LoginRequest;
 import com.project.kore.dto.request.RegisterRequest;
-import com.project.kore.dto.response.AuthResult;
+import com.project.kore.dto.response.AuthResultResponse;
 import com.project.kore.dto.response.UserResponse;
 import com.project.kore.enums.PaymentFrequency;
 import com.project.kore.enums.Role;
@@ -319,7 +319,7 @@ class AuthFacadeImplTest {
     // ─── login ───────────────────────────────────────────────────────────────────
 
     @Test
-    @DisplayName("login: valid credentials → returns AuthResult with token and user")
+    @DisplayName("login: valid credentials → returns AuthResultResponse with token and user")
     void login_validCredentials_returnsAuthResult() {
         LoginRequest request = new LoginRequest("mario@test.com", "pass123");
 
@@ -327,7 +327,7 @@ class AuthFacadeImplTest {
         when(passwordEncoder.matches("pass123", "encoded_pass")).thenReturn(true);
         when(jwtUtil.generateToken(client)).thenReturn("jwt-token");
 
-        AuthResult result = authFacade.login(request);
+        AuthResultResponse result = authFacade.login(request);
 
         assertThat(result.getToken()).isEqualTo("jwt-token");
         assertThat(result.getUser()).isEqualTo(client);

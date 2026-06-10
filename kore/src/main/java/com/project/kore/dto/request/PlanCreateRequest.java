@@ -12,7 +12,7 @@ import jakarta.validation.constraints.*;
  * @param monthlyCreditsPT         crediti PT erogati ogni mese
  * @param monthlyCreditsNutri      crediti nutrizionista erogati ogni mese
  */
-public record PlanCreateRequestDTO(
+public record PlanCreateRequest(
         @NotBlank @Size(min = 2, max = 100) String name,
         @NotBlank String duration,
         @NotNull @Positive Double fullPrice,

@@ -17,7 +17,7 @@ import jakarta.validation.constraints.*;
  * @param planId                 id del piano (solo clienti)
  * @param paymentFrequency       frequenza di pagamento (solo clienti)
  */
-public record UserCreateRequestDTO(
+public record UserCreateRequest(
         @NotBlank @Email String email,
         @NotBlank @Size(min = 2, max = 50) String firstName,
         @NotBlank @Size(min = 2, max = 50) String lastName,

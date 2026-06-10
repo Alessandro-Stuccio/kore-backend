@@ -5,10 +5,10 @@ import com.project.kore.dto.request.LoginRequest;
 import com.project.kore.dto.request.RegisterRequest;
 import com.project.kore.dto.request.ResetPasswordRequest;
 import com.project.kore.dto.response.AuthResponse;
+import com.project.kore.dto.response.AuthResultResponse;
 import com.project.kore.dto.response.UserResponse;
 import com.project.kore.facade.AuthFacade;
 import com.project.kore.model.User;
-import com.project.kore.dto.response.AuthResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -55,7 +55,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
         log.info("Tentativo di login: {}", request.email());
-        AuthResult result = authFacade.login(request);
+        AuthResultResponse result = authFacade.login(request);
         User u = result.getUser();
         return ResponseEntity.ok(AuthResponse.builder()
                 .token(result.getToken())

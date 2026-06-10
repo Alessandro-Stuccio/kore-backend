@@ -1,7 +1,7 @@
 package com.project.kore.facade.impl;
 
 import com.project.kore.dto.response.BookingResponse;
-import com.project.kore.dto.response.SlotDTO;
+import com.project.kore.dto.response.SlotResponse;
 import com.project.kore.dto.response.stats.ProfessionalStatsResponse;
 import com.project.kore.enums.BookingStatus;
 import com.project.kore.enums.DocumentType;
@@ -60,14 +60,14 @@ public class ProfessionalFacadeImpl implements ProfessionalFacade {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SlotDTO> getAvailableSlots(Long professionalId) {
+    public List<SlotResponse> getAvailableSlots(Long professionalId) {
         User professional = userService.getUserById(professionalId);
         return slotMapper.toDtoList(slotService.getAvailableSlots(professional));
     }
 
     @Override
     @Transactional
-    public List<SlotDTO> createSlots(Long professionalId, List<SlotDTO> slots) {
+    public List<SlotResponse> createSlots(Long professionalId, List<SlotResponse> slots) {
         User professional = userService.getUserById(professionalId);
         if (professional.getRole() != Role.PERSONAL_TRAINER && professional.getRole() != Role.NUTRITIONIST) {
             throw new AccessDeniedException("Solo i professionisti possono creare slot");

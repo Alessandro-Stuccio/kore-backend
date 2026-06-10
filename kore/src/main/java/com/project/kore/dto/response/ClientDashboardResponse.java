@@ -10,7 +10,7 @@ import java.util.Objects;
 public class ClientDashboardResponse {
 
     private UserResponse profile;
-    private List<ProfessionalSummaryDTO> followingProfessionals;
+    private List<ProfessionalSummaryResponse> followingProfessionals;
     private SubscriptionResponse subscription;
     private List<BookingResponse> upcomingBookings;
 
@@ -18,8 +18,8 @@ public class ClientDashboardResponse {
     public UserResponse getProfile() { return profile; }
     public void setProfile(UserResponse profile) { this.profile = profile; }
 
-    public List<ProfessionalSummaryDTO> getFollowingProfessionals() { return followingProfessionals; }
-    public void setFollowingProfessionals(List<ProfessionalSummaryDTO> followingProfessionals) { this.followingProfessionals = followingProfessionals; }
+    public List<ProfessionalSummaryResponse> getFollowingProfessionals() { return followingProfessionals; }
+    public void setFollowingProfessionals(List<ProfessionalSummaryResponse> followingProfessionals) { this.followingProfessionals = followingProfessionals; }
 
     public SubscriptionResponse getSubscription() { return subscription; }
     public void setSubscription(SubscriptionResponse subscription) { this.subscription = subscription; }
@@ -47,12 +47,12 @@ public class ClientDashboardResponse {
 
     public static class Builder {
         private UserResponse profile;
-        private List<ProfessionalSummaryDTO> followingProfessionals;
+        private List<ProfessionalSummaryResponse> followingProfessionals;
         private SubscriptionResponse subscription;
         private List<BookingResponse> upcomingBookings;
 
         public Builder profile(UserResponse profile) { this.profile = profile; return this; }
-        public Builder followingProfessionals(List<ProfessionalSummaryDTO> followingProfessionals) { this.followingProfessionals = followingProfessionals; return this; }
+        public Builder followingProfessionals(List<ProfessionalSummaryResponse> followingProfessionals) { this.followingProfessionals = followingProfessionals; return this; }
         public Builder subscription(SubscriptionResponse subscription) { this.subscription = subscription; return this; }
         public Builder upcomingBookings(List<BookingResponse> upcomingBookings) { this.upcomingBookings = upcomingBookings; return this; }
 

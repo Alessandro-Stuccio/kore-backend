@@ -6,7 +6,7 @@ import java.util.Objects;
 /**
  * Uno slot di disponibilità di un professionista. Serve sia in ingresso che in uscita.
  */
-public class SlotDTO {
+public class SlotResponse {
 
     private Long id;
     private LocalDateTime startTime;
@@ -34,7 +34,7 @@ public class SlotDTO {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SlotDTO that = (SlotDTO) o;
+        SlotResponse that = (SlotResponse) o;
         return Objects.equals(id, that.id);
     }
 
@@ -45,7 +45,7 @@ public class SlotDTO {
 
     @Override
     public String toString() {
-        return "SlotDTO{id=" + id + ", professionalId=" + professionalId + ", startTime=" + startTime + ", endTime=" + endTime + ", isAvailable=" + isAvailable + "}";
+        return "SlotResponse{id=" + id + ", professionalId=" + professionalId + ", startTime=" + startTime + ", endTime=" + endTime + ", isAvailable=" + isAvailable + "}";
     }
 
     public static class Builder {
@@ -62,8 +62,8 @@ public class SlotDTO {
         public Builder isAvailable(boolean isAvailable) { this.isAvailable = isAvailable; return this; }
         public Builder professionalId(Long professionalId) { this.professionalId = professionalId; return this; }
 
-        public SlotDTO build() {
-            SlotDTO dto = new SlotDTO();
+        public SlotResponse build() {
+            SlotResponse dto = new SlotResponse();
             dto.id = this.id;
             dto.startTime = this.startTime;
             dto.endTime = this.endTime;

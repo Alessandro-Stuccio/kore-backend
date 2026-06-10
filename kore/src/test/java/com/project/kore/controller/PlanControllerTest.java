@@ -1,6 +1,6 @@
 package com.project.kore.controller;
 
-import com.project.kore.dto.response.PlanResponseDTO;
+import com.project.kore.dto.response.PlanResponse;
 import com.project.kore.exception.GlobalExceptionHandler;
 import com.project.kore.facade.PlanFacade;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,12 +46,12 @@ class PlanControllerTest {
     @Test
     @DisplayName("GET /api/plans — 200 con lista di piani disponibili")
     void getAllPlans_returnsList() throws Exception {
-        PlanResponseDTO basic = PlanResponseDTO.builder()
+        PlanResponse basic = PlanResponse.builder()
                 .id(1L).name("Basic").duration("SEMESTRALE")
                 .fullPrice(299.0).monthlyCreditsPT(1).monthlyCreditsNutri(1)
                 .build();
 
-        PlanResponseDTO premium = PlanResponseDTO.builder()
+        PlanResponse premium = PlanResponse.builder()
                 .id(2L).name("Premium").duration("ANNUALE")
                 .fullPrice(599.0).monthlyCreditsPT(2).monthlyCreditsNutri(2)
                 .build();

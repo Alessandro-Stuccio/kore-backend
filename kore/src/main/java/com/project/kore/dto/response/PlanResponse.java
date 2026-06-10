@@ -3,7 +3,7 @@ package com.project.kore.dto.response;
 /**
  * Un piano di abbonamento offerto, con prezzi (intero o rateizzato) e crediti mensili inclusi.
  */
-public class PlanResponseDTO {
+public class PlanResponse {
 
     private Long id;
     private String name;
@@ -15,7 +15,7 @@ public class PlanResponseDTO {
     private Boolean active;
 
 
-    private PlanResponseDTO(Builder b) {
+    private PlanResponse(Builder b) {
         this.id = b.id;
         this.name = b.name;
         this.duration = b.duration;
@@ -56,6 +56,6 @@ public class PlanResponseDTO {
         public Builder monthlyCreditsNutri(Integer v) { this.monthlyCreditsNutri = v; return this; }
         public Builder active(Boolean active) { this.active = active; return this; }
 
-        public PlanResponseDTO build() { return new PlanResponseDTO(this); }
+        public PlanResponse build() { return new PlanResponse(this); }
     }
 }

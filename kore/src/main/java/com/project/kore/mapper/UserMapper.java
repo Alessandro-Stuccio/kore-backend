@@ -2,7 +2,7 @@ package com.project.kore.mapper;
 
 import com.project.kore.dto.request.RegisterRequest;
 import com.project.kore.dto.response.ClientBasicInfoResponse;
-import com.project.kore.dto.response.ProfessionalSummaryDTO;
+import com.project.kore.dto.response.ProfessionalSummaryResponse;
 import com.project.kore.dto.response.UserResponse;
 import com.project.kore.enums.Role;
 import com.project.kore.model.User;
@@ -142,8 +142,8 @@ public class UserMapper {
      * @param pro il professionista da convertire
      * @return il DTO di riepilogo del professionista
      */
-    public ProfessionalSummaryDTO toProfessionalSummary(User pro) {
-        return ProfessionalSummaryDTO.builder()
+    public ProfessionalSummaryResponse toProfessionalSummary(User pro) {
+        return ProfessionalSummaryResponse.builder()
                 .id(pro.getId())
                 .fullName(pro.getFullName())
                 .role(pro.getRole())

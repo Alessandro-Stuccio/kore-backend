@@ -2,7 +2,7 @@ package com.project.kore.controller;
 
 import com.project.kore.dto.request.ModeratorUserUpdateRequest;
 import com.project.kore.dto.request.UpdateCreditsRequest;
-import com.project.kore.dto.request.UserCreateRequestDTO;
+import com.project.kore.dto.request.UserCreateRequest;
 import com.project.kore.dto.response.SubscriptionResponse;
 import com.project.kore.dto.response.UserResponse;
 import com.project.kore.facade.ModeratorFacade;
@@ -64,7 +64,7 @@ public class ModeratorController {
      * @return 200 con i dati dell'utente creato
      */
     @PostMapping("/users")
-    public ResponseEntity<UserResponse> createUser(@RequestBody UserCreateRequestDTO body, @AuthenticationPrincipal User user) {
+    public ResponseEntity<UserResponse> createUser(@RequestBody UserCreateRequest body, @AuthenticationPrincipal User user) {
         return ResponseEntity.ok(moderatorFacade.createUser(body, user));
     }
 

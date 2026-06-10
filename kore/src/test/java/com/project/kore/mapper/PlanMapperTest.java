@@ -1,7 +1,7 @@
 package com.project.kore.mapper;
 
-import com.project.kore.dto.request.PlanCreateRequestDTO;
-import com.project.kore.dto.response.PlanResponseDTO;
+import com.project.kore.dto.request.PlanCreateRequest;
+import com.project.kore.dto.response.PlanResponse;
 import com.project.kore.enums.PlanDuration;
 import com.project.kore.model.Plan;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,7 +52,7 @@ class PlanMapperTest {
     void toResponse_semestralePlan_mapsAllFields() {
         Plan plan = buildPlan(1L, "Basic Semestrale", PlanDuration.SEMESTRALE, 300.0, 55.0, 1, 1);
 
-        PlanResponseDTO response = planMapper.toResponse(plan);
+        PlanResponse response = planMapper.toResponse(plan);
 
         assertThat(response.getId()).isEqualTo(1L);
         assertThat(response.getName()).isEqualTo("Basic Semestrale");
@@ -68,7 +68,7 @@ class PlanMapperTest {
     void toResponse_annualPlan_durationIsANNUALE() {
         Plan plan = buildPlan(2L, "Premium Annuale", PlanDuration.ANNUALE, 600.0, 55.0, 2, 2);
 
-        PlanResponseDTO response = planMapper.toResponse(plan);
+        PlanResponse response = planMapper.toResponse(plan);
 
         assertThat(response.getDuration()).isEqualTo("ANNUALE");
     }
@@ -81,7 +81,7 @@ class PlanMapperTest {
         plan.setName("NoDuration");
         plan.setDuration(null);
 
-        PlanResponseDTO response = planMapper.toResponse(plan);
+        PlanResponse response = planMapper.toResponse(plan);
 
         assertThat(response.getDuration()).isNull();
     }
@@ -94,7 +94,7 @@ class PlanMapperTest {
         Plan p1 = buildPlan(1L, "Basic", PlanDuration.SEMESTRALE, 300.0, 55.0, 1, 1);
         Plan p2 = buildPlan(2L, "Premium", PlanDuration.ANNUALE, 600.0, 55.0, 2, 2);
 
-        List<PlanResponseDTO> result = planMapper.toResponseList(List.of(p1, p2));
+        List<PlanResponse> result = planMapper.toResponseList(List.of(p1, p2));
 
         assertThat(result).hasSize(2);
         assertThat(result.get(0).getId()).isEqualTo(1L);
@@ -112,7 +112,7 @@ class PlanMapperTest {
     @Test
     @DisplayName("toPlan: maps all fields from request")
     void toPlan_validRequest_mapsAllFields() {
-        PlanCreateRequestDTO request = new PlanCreateRequestDTO(
+        PlanCreateRequest request = new PlanCreateRequest(
                 "Basic Semestrale", "SEMESTRALE", 300.0, 55.0, 1, 1);
 
         Plan plan = planMapper.toPlan(request);
@@ -128,7 +128,7 @@ class PlanMapperTest {
     @Test
     @DisplayName("toPlan: maps ANNUALE duration")
     void toPlan_annualeDuration_parsesCorrectly() {
-        PlanCreateRequestDTO request = new PlanCreateRequestDTO(
+        PlanCreateRequest request = new PlanCreateRequest(
                 "Premium Annuale", "ANNUALE", 600.0, 55.0, 2, 2);
 
         Plan plan = planMapper.toPlan(request);
@@ -139,7 +139,7 @@ class PlanMapperTest {
     @Test
     @DisplayName("toPlan: null credits default to 0")
     void toPlan_nullCredits_defaultToZero() {
-        PlanCreateRequestDTO request = new PlanCreateRequestDTO(
+        PlanCreateRequest request = new PlanCreateRequest(
                 "Basic", "SEMESTRALE", 300.0, 55.0, null, null);
 
         Plan plan = planMapper.toPlan(request);
@@ -151,7 +151,7 @@ class PlanMapperTest {
     @Test
     @DisplayName("toPlan: throws exception for invalid duration string")
     void toPlan_invalidDuration_throwsIllegalArgumentException() {
-        PlanCreateRequestDTO request = new PlanCreateRequestDTO(
+        PlanCreateRequest request = new PlanCreateRequest(
                 "Bad", "INVALID_DURATION", 100.0, 10.0, 1, 1);
 
         assertThatThrownBy(() -> planMapper.toPlan(request))
@@ -164,7 +164,7 @@ class PlanMapperTest {
     @DisplayName("updatePlanFromRequest: updates all non-null fields in existing plan")
     void updatePlanFromRequest_updatesAllFields() {
         Plan existing = buildPlan(1L, "Old Name", PlanDuration.SEMESTRALE, 200.0, 40.0, 1, 1);
-        PlanCreateRequestDTO request = new PlanCreateRequestDTO(
+        PlanCreateRequest request = new PlanCreateRequest(
                 "New Name", "ANNUALE", 400.0, 70.0, 2, 2);
 
         planMapper.updatePlanFromRequest(request, existing);
@@ -181,7 +181,7 @@ class PlanMapperTest {
     @DisplayName("updatePlanFromRequest: does not overwrite name when null in request")
     void updatePlanFromRequest_nullName_doesNotOverwriteName() {
         Plan existing = buildPlan(1L, "Preserved Name", PlanDuration.SEMESTRALE, 200.0, 40.0, 1, 1);
-        PlanCreateRequestDTO request = new PlanCreateRequestDTO(
+        PlanCreateRequest request = new PlanCreateRequest(
                 null, "ANNUALE", 400.0, 70.0, 2, 2);
 
         planMapper.updatePlanFromRequest(request, existing);
@@ -193,7 +193,7 @@ class PlanMapperTest {
     @DisplayName("updatePlanFromRequest: does not overwrite name when blank in request")
     void updatePlanFromRequest_blankName_doesNotOverwriteName() {
         Plan existing = buildPlan(1L, "Preserved Name", PlanDuration.SEMESTRALE, 200.0, 40.0, 1, 1);
-        PlanCreateRequestDTO request = new PlanCreateRequestDTO(
+        PlanCreateRequest request = new PlanCreateRequest(
                 "   ", "SEMESTRALE", 200.0, 40.0, 1, 1);
 
         planMapper.updatePlanFromRequest(request, existing);
@@ -205,7 +205,7 @@ class PlanMapperTest {
     @DisplayName("updatePlanFromRequest: does not overwrite price when null in request")
     void updatePlanFromRequest_nullPrice_doesNotOverwritePrice() {
         Plan existing = buildPlan(1L, "Plan", PlanDuration.SEMESTRALE, 200.0, 40.0, 1, 1);
-        PlanCreateRequestDTO request = new PlanCreateRequestDTO(
+        PlanCreateRequest request = new PlanCreateRequest(
                 "Plan", "SEMESTRALE", null, null, 1, 1);
 
         planMapper.updatePlanFromRequest(request, existing);
@@ -218,7 +218,7 @@ class PlanMapperTest {
     @DisplayName("updatePlanFromRequest: does not overwrite credits when null in request")
     void updatePlanFromRequest_nullCredits_doesNotOverwriteCredits() {
         Plan existing = buildPlan(1L, "Plan", PlanDuration.SEMESTRALE, 200.0, 40.0, 3, 3);
-        PlanCreateRequestDTO request = new PlanCreateRequestDTO(
+        PlanCreateRequest request = new PlanCreateRequest(
                 "Plan", "SEMESTRALE", 200.0, 40.0, null, null);
 
         planMapper.updatePlanFromRequest(request, existing);

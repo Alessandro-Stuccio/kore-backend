@@ -1,7 +1,7 @@
 package com.project.kore.facade.impl;
 
 import com.project.kore.dto.request.ModeratorUserUpdateRequest;
-import com.project.kore.dto.request.UserCreateRequestDTO;
+import com.project.kore.dto.request.UserCreateRequest;
 import com.project.kore.dto.response.SubscriptionResponse;
 import com.project.kore.dto.response.UserResponse;
 import com.project.kore.enums.Role;
@@ -162,7 +162,7 @@ class ModeratorFacadeImplTest {
     @Test
     @DisplayName("createUser MODERATOR: creates CLIENT user successfully")
     void createUser_moderatorCreatesClient_success() {
-        UserCreateRequestDTO request = new UserCreateRequestDTO(
+        UserCreateRequest request = new UserCreateRequest(
                 "new@test.com", "Luca", "Bianchi", "password123", "CLIENT",
                 null, null, null, null);
 
@@ -180,7 +180,7 @@ class ModeratorFacadeImplTest {
     @Test
     @DisplayName("createUser MODERATOR: throws AccessDeniedException when role is ADMIN")
     void createUser_moderatorCreatesAdmin_throwsUnauthorized() {
-        UserCreateRequestDTO request = new UserCreateRequestDTO(
+        UserCreateRequest request = new UserCreateRequest(
                 "admin2@test.com", "Admin", "New", "password123", "ADMIN",
                 null, null, null, null);
 
@@ -193,7 +193,7 @@ class ModeratorFacadeImplTest {
     @Test
     @DisplayName("createUser: throws ResourceAlreadyExistsException when email is already taken")
     void createUser_duplicateEmail_throwsAlreadyExists() {
-        UserCreateRequestDTO request = new UserCreateRequestDTO(
+        UserCreateRequest request = new UserCreateRequest(
                 "existing@test.com", "Mario", "Rossi", "password123", "CLIENT",
                 null, null, null, null);
 
@@ -206,7 +206,7 @@ class ModeratorFacadeImplTest {
     @Test
     @DisplayName("createUser: throws IllegalArgumentException when required fields are null")
     void createUser_missingRequiredFields_throwsIllegalArgument() {
-        UserCreateRequestDTO request = new UserCreateRequestDTO(
+        UserCreateRequest request = new UserCreateRequest(
                 null, "Mario", "Rossi", "password123", "CLIENT",
                 null, null, null, null);
 
@@ -218,7 +218,7 @@ class ModeratorFacadeImplTest {
     @Test
     @DisplayName("createUser CLIENT with assignedPT: links PT user when role is PERSONAL_TRAINER")
     void createUser_withAssignedPT_linksPT() {
-        UserCreateRequestDTO request = new UserCreateRequestDTO(
+        UserCreateRequest request = new UserCreateRequest(
                 "new@test.com", "Luca", "Bianchi", "password123", "CLIENT",
                 2L, null, null, null);
 
@@ -236,7 +236,7 @@ class ModeratorFacadeImplTest {
     @Test
     @DisplayName("createUser CLIENT with assignedPT: throws AccessDeniedException when assigned user is not PT")
     void createUser_withAssignedPT_notPT_throwsUnauthorized() {
-        UserCreateRequestDTO request = new UserCreateRequestDTO(
+        UserCreateRequest request = new UserCreateRequest(
                 "new@test.com", "Luca", "Bianchi", "password123", "CLIENT",
                 1L, null, null, null);
 

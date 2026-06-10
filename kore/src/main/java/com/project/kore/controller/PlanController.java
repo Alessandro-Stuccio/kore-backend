@@ -1,6 +1,6 @@
 package com.project.kore.controller;
 
-import com.project.kore.dto.response.PlanResponseDTO;
+import com.project.kore.dto.response.PlanResponse;
 import com.project.kore.facade.PlanFacade;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +28,7 @@ public class PlanController {
      * @return 200 con i piani attivi
      */
     @GetMapping
-    public ResponseEntity<List<PlanResponseDTO>> getAllPlans() {
+    public ResponseEntity<List<PlanResponse>> getAllPlans() {
         return ResponseEntity.ok(planFacade.getAllPlans());
     }
 }

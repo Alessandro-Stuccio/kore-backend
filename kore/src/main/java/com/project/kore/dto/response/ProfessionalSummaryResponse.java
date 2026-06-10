@@ -7,7 +7,7 @@ import java.util.Objects;
  * Riepilogo di un professionista, mostrato nelle liste e nella dashboard del cliente.
  * isSoldOut segnala che il professionista ha raggiunto il limite di clienti attivi.
  */
-public class ProfessionalSummaryDTO {
+public class ProfessionalSummaryResponse {
 
     private Long id;
     private String fullName;
@@ -39,7 +39,7 @@ public class ProfessionalSummaryDTO {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ProfessionalSummaryDTO that = (ProfessionalSummaryDTO) o;
+        ProfessionalSummaryResponse that = (ProfessionalSummaryResponse) o;
         return Objects.equals(id, that.id);
     }
 
@@ -50,7 +50,7 @@ public class ProfessionalSummaryDTO {
 
     @Override
     public String toString() {
-        return "ProfessionalSummaryDTO{id=" + id + ", fullName='" + fullName + "', averageRating=" + averageRating + ", role=" + role + ", isSoldOut=" + isSoldOut + "}";
+        return "ProfessionalSummaryResponse{id=" + id + ", fullName='" + fullName + "', averageRating=" + averageRating + ", role=" + role + ", isSoldOut=" + isSoldOut + "}";
     }
 
     public static class Builder {
@@ -68,8 +68,8 @@ public class ProfessionalSummaryDTO {
         public Builder isSoldOut(boolean isSoldOut) { this.isSoldOut = isSoldOut; return this; }
         public Builder role(Role role) { this.role = role; return this; }
 
-        public ProfessionalSummaryDTO build() {
-            ProfessionalSummaryDTO obj = new ProfessionalSummaryDTO();
+        public ProfessionalSummaryResponse build() {
+            ProfessionalSummaryResponse obj = new ProfessionalSummaryResponse();
             obj.id = this.id;
             obj.fullName = this.fullName;
             obj.averageRating = this.averageRating;

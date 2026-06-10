@@ -1,6 +1,6 @@
 package com.project.kore.facade.impl;
 
-import com.project.kore.dto.response.PlanResponseDTO;
+import com.project.kore.dto.response.PlanResponse;
 import com.project.kore.mapper.PlanMapper;
 import com.project.kore.model.Plan;
 import com.project.kore.enums.PlanDuration;
@@ -29,7 +29,7 @@ class PlanFacadeImplTest {
     private PlanFacadeImpl planFacade;
 
     private Plan plan;
-    private PlanResponseDTO planResponseDTO;
+    private PlanResponse planResponse;
 
     @BeforeEach
     void setUp() {
@@ -42,7 +42,7 @@ class PlanFacadeImplTest {
         plan.setMonthlyCreditsPT(1);
         plan.setMonthlyCreditsNutri(1);
 
-        planResponseDTO = PlanResponseDTO.builder()
+        planResponse = PlanResponse.builder()
                 .id(1L).name("Basic").duration("SEMESTRALE")
                 .fullPrice(100.0).monthlyInstallmentPrice(20.0)
                 .monthlyCreditsPT(1).monthlyCreditsNutri(1)
@@ -55,11 +55,11 @@ class PlanFacadeImplTest {
     @DisplayName("getAllPlans: delegates to service (active only) and mapper, returns list")
     void getAllPlans_returnsMappedList() {
         List<Plan> plans = List.of(plan);
-        List<PlanResponseDTO> expected = List.of(planResponseDTO);
+        List<PlanResponse> expected = List.of(planResponse);
         when(planService.getActivePlans()).thenReturn(plans);
         when(planMapper.toResponseList(plans)).thenReturn(expected);
 
-        List<PlanResponseDTO> result = planFacade.getAllPlans();
+        List<PlanResponse> result = planFacade.getAllPlans();
 
         assertThat(result).isEqualTo(expected);
         verify(planService).getActivePlans();
@@ -72,7 +72,7 @@ class PlanFacadeImplTest {
         when(planService.getActivePlans()).thenReturn(List.of());
         when(planMapper.toResponseList(List.of())).thenReturn(List.of());
 
-        List<PlanResponseDTO> result = planFacade.getAllPlans();
+        List<PlanResponse> result = planFacade.getAllPlans();
 
         assertThat(result).isEmpty();
     }

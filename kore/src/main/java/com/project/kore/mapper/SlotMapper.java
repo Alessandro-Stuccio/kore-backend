@@ -1,6 +1,6 @@
 package com.project.kore.mapper;
 
-import com.project.kore.dto.response.SlotDTO;
+import com.project.kore.dto.response.SlotResponse;
 import com.project.kore.model.Slot;
 import com.project.kore.model.User;
 import org.springframework.stereotype.Component;
@@ -20,9 +20,9 @@ public class SlotMapper {
      * @param slot lo slot da convertire
      * @return il DTO dello slot, oppure {@code null} se l'input è {@code null}
      */
-    public SlotDTO toDto(Slot slot) {
+    public SlotResponse toDto(Slot slot) {
         if (slot == null) return null;
-        return SlotDTO.builder()
+        return SlotResponse.builder()
                 .id(slot.getId())
                 .startTime(slot.getStartTime())
                 .endTime(slot.getEndTime())
@@ -37,7 +37,7 @@ public class SlotMapper {
      * @param slots gli slot da convertire
      * @return i DTO degli slot
      */
-    public List<SlotDTO> toDtoList(List<Slot> slots) {
+    public List<SlotResponse> toDtoList(List<Slot> slots) {
         return slots.stream().map(this::toDto).collect(Collectors.toList());
     }
 
@@ -48,7 +48,7 @@ public class SlotMapper {
      * @param professional il professionista titolare
      * @return il nuovo slot libero
      */
-    public Slot toEntity(SlotDTO dto, User professional) {
+    public Slot toEntity(SlotResponse dto, User professional) {
         Slot slot = new Slot();
         slot.setProfessional(professional);
         slot.setStartTime(dto.getStartTime());
@@ -63,7 +63,7 @@ public class SlotMapper {
      * @param professional il professionista titolare
      * @return i nuovi slot
      */
-    public List<Slot> toEntityList(List<SlotDTO> dtos, User professional) {
+    public List<Slot> toEntityList(List<SlotResponse> dtos, User professional) {
         return dtos.stream().map(dto -> toEntity(dto, professional)).collect(Collectors.toList());
     }
 }

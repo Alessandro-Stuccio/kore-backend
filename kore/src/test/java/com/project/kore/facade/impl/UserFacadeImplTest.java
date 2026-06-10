@@ -2,11 +2,8 @@ package com.project.kore.facade.impl;
 
 import com.project.kore.dto.request.PlanRequest;
 import com.project.kore.dto.request.ProfileUpdateRequest;
-import com.project.kore.dto.response.ClientBasicInfoResponse;
-import com.project.kore.dto.response.ClientDashboardResponse;
-import com.project.kore.dto.response.ProfessionalSummaryDTO;
-import com.project.kore.dto.response.SubscriptionResponse;
-import com.project.kore.dto.response.UserResponse;
+import com.project.kore.dto.response.*;
+import com.project.kore.dto.response.ProfessionalSummaryResponse;
 import com.project.kore.enums.PaymentFrequency;
 import com.project.kore.enums.Role;
 import com.project.kore.exception.common.ResourceAlreadyExistsException;
@@ -223,8 +220,8 @@ class UserFacadeImplTest {
         clientUser.setAssignedNutritionist(nutriUser);
 
         UserResponse userResponse = UserResponse.builder().id(1L).build();
-        ProfessionalSummaryDTO ptSummary = ProfessionalSummaryDTO.builder().id(2L).build();
-        ProfessionalSummaryDTO nutriSummary = ProfessionalSummaryDTO.builder().id(3L).build();
+        ProfessionalSummaryResponse ptSummary = ProfessionalSummaryResponse.builder().id(2L).build();
+        ProfessionalSummaryResponse nutriSummary = ProfessionalSummaryResponse.builder().id(3L).build();
         SubscriptionResponse subResponse = SubscriptionResponse.builder().id(99L).active(true).build();
         Subscription subscription = new Subscription();
 
@@ -331,7 +328,7 @@ class UserFacadeImplTest {
         when(userService.countByAssignedPT(pt1)).thenReturn(5L);
         when(userService.countByAssignedPT(pt2)).thenReturn(10L);
 
-        List<ProfessionalSummaryDTO> result = userFacade.findAvailableProfessionals(Role.PERSONAL_TRAINER);
+        List<ProfessionalSummaryResponse> result = userFacade.findAvailableProfessionals(Role.PERSONAL_TRAINER);
 
         assertThat(result).hasSize(2);
         assertThat(result.get(0).getAverageRating()).isEqualTo(4.5);
@@ -351,7 +348,7 @@ class UserFacadeImplTest {
         when(reviewService.getAverageRating(1L)).thenReturn(4.0);
         when(userService.countByAssignedPT(pt1)).thenReturn(50L); // MAX_CLIENTS_PER_PROFESSIONAL
 
-        List<ProfessionalSummaryDTO> result = userFacade.findAvailableProfessionals(Role.PERSONAL_TRAINER);
+        List<ProfessionalSummaryResponse> result = userFacade.findAvailableProfessionals(Role.PERSONAL_TRAINER);
 
         assertThat(result.get(0).isSoldOut()).isTrue();
     }
@@ -369,7 +366,7 @@ class UserFacadeImplTest {
         when(reviewService.getAverageRating(3L)).thenReturn(4.0);
         when(userService.countByAssignedNutritionist(nutri)).thenReturn(20L);
 
-        List<ProfessionalSummaryDTO> result = userFacade.findAvailableProfessionals(Role.NUTRITIONIST);
+        List<ProfessionalSummaryResponse> result = userFacade.findAvailableProfessionals(Role.NUTRITIONIST);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getCurrentActiveClients()).isEqualTo(20);
@@ -381,7 +378,7 @@ class UserFacadeImplTest {
     void findAvailableProfessionals_emptyList_returnsEmpty() {
         when(userService.findByRole(Role.PERSONAL_TRAINER)).thenReturn(List.of());
 
-        List<ProfessionalSummaryDTO> result = userFacade.findAvailableProfessionals(Role.PERSONAL_TRAINER);
+        List<ProfessionalSummaryResponse> result = userFacade.findAvailableProfessionals(Role.PERSONAL_TRAINER);
 
         assertThat(result).isEmpty();
     }

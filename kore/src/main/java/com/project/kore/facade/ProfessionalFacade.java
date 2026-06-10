@@ -1,7 +1,7 @@
 package com.project.kore.facade;
 
 import com.project.kore.dto.response.BookingResponse;
-import com.project.kore.dto.response.SlotDTO;
+import com.project.kore.dto.response.SlotResponse;
 import com.project.kore.dto.response.stats.ProfessionalStatsResponse;
 import com.project.kore.model.User;
 import org.springframework.security.access.AccessDeniedException;
@@ -20,7 +20,7 @@ public interface ProfessionalFacade {
      * @param professionalId id del professionista
      * @return gli slot liberi
      */
-    List<SlotDTO> getAvailableSlots(Long professionalId);
+    List<SlotResponse> getAvailableSlots(Long professionalId);
 
     /**
      * Crea i nuovi slot indicati per il professionista.
@@ -30,7 +30,7 @@ public interface ProfessionalFacade {
      * @return gli slot creati
      * @throws AccessDeniedException se l'utente indicato non è un professionista
      */
-    List<SlotDTO> createSlots(Long professionalId, List<SlotDTO> slots);
+    List<SlotResponse> createSlots(Long professionalId, List<SlotResponse> slots);
 
     /**
      * Elimina lo slot solo se il richiedente ne è il proprietario.

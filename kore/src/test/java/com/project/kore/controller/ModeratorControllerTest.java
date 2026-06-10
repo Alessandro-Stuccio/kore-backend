@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.project.kore.dto.request.ModeratorUserUpdateRequest;
 import com.project.kore.dto.request.UpdateCreditsRequest;
-import com.project.kore.dto.request.UserCreateRequestDTO;
+import com.project.kore.dto.request.UserCreateRequest;
 import com.project.kore.dto.response.SubscriptionResponse;
 import com.project.kore.dto.response.UserResponse;
 import com.project.kore.enums.Role;
@@ -105,9 +105,9 @@ class ModeratorControllerTest {
         UserResponse created = UserResponse.builder()
                 .id(20L).firstName("Anna").lastName("Verdi").email("anna@test.com").role(Role.CLIENT)
                 .build();
-        when(moderatorFacade.createUser(any(UserCreateRequestDTO.class), any(User.class))).thenReturn(created);
+        when(moderatorFacade.createUser(any(UserCreateRequest.class), any(User.class))).thenReturn(created);
 
-        UserCreateRequestDTO req = new UserCreateRequestDTO(
+        UserCreateRequest req = new UserCreateRequest(
                 "anna@test.com", "Anna", "Verdi", "password123", "CLIENT",
                 null, null, null, null);
 

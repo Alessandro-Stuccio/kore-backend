@@ -1,6 +1,6 @@
 package com.project.kore.facade.impl;
 
-import com.project.kore.dto.response.PlanResponseDTO;
+import com.project.kore.dto.response.PlanResponse;
 import com.project.kore.facade.PlanFacade;
 import com.project.kore.mapper.PlanMapper;
 import com.project.kore.service.PlanService;
@@ -25,7 +25,7 @@ public class PlanFacadeImpl implements PlanFacade {
 
     @Override
     @Transactional(readOnly = true)
-    public List<PlanResponseDTO> getAllPlans() {
+    public List<PlanResponse> getAllPlans() {
         return planMapper.toResponseList(planService.getActivePlans());
     }
 }

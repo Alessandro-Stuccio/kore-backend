@@ -104,7 +104,7 @@ public class UserFacadeImpl implements UserFacade {
             throw new AccessDeniedException("La dashboard cliente è accessibile solo ai clienti.");
         }
 
-        List<ProfessionalSummaryDTO> followingProfessionals = new ArrayList<>();
+        List<ProfessionalSummaryResponse> followingProfessionals = new ArrayList<>();
         if (user.getAssignedPT() != null)
             followingProfessionals.add(userMapper.toProfessionalSummary(user.getAssignedPT()));
         if (user.getAssignedNutritionist() != null)
@@ -130,14 +130,14 @@ public class UserFacadeImpl implements UserFacade {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProfessionalSummaryDTO> findAvailableProfessionals(Role role) {
+    public List<ProfessionalSummaryResponse> findAvailableProfessionals(Role role) {
         return userService.findByRole(role).stream()
                 .map(pro -> {
                     double avg = reviewService.getAverageRating(pro.getId());
                     long activeClients = pro.getRole() == Role.PERSONAL_TRAINER
                             ? userService.countByAssignedPT(pro)
                             : userService.countByAssignedNutritionist(pro);
-                    return ProfessionalSummaryDTO.builder()
+                    return ProfessionalSummaryResponse.builder()
                             .id(pro.getId())
                             .fullName(pro.getFullName())
                             .role(pro.getRole())

@@ -1,7 +1,7 @@
 package com.project.kore.facade.impl;
 
-import com.project.kore.dto.request.PlanCreateRequestDTO;
-import com.project.kore.dto.response.PlanResponseDTO;
+import com.project.kore.dto.request.PlanCreateRequest;
+import com.project.kore.dto.response.PlanResponse;
 import com.project.kore.dto.response.stats.AdminStatsResponse;
 import com.project.kore.enums.Role;
 import com.project.kore.exception.common.ResourceAlreadyExistsException;
@@ -56,7 +56,7 @@ public class AdminFacadeImpl implements AdminFacade {
      */
     @Override
     @Transactional
-    public PlanResponseDTO createPlan(PlanCreateRequestDTO request) {
+    public PlanResponse createPlan(PlanCreateRequest request) {
         String name = request.name();
         String durationRaw = request.duration();
         Double fullPrice = request.fullPrice();
@@ -86,7 +86,7 @@ public class AdminFacadeImpl implements AdminFacade {
      */
     @Override
     @Transactional
-    public PlanResponseDTO updatePlan(Long id, PlanCreateRequestDTO request) {
+    public PlanResponse updatePlan(Long id, PlanCreateRequest request) {
         Plan plan = planService.getPlanById(id);
 
         if (request.name() != null && !request.name().isBlank() && !request.name().equals(plan.getName())) {
@@ -107,7 +107,7 @@ public class AdminFacadeImpl implements AdminFacade {
     // Tutti i piani, compresi i disabilitati, per la vista amministrativa.
     @Override
     @Transactional(readOnly = true)
-    public List<PlanResponseDTO> getAllPlansForAdmin() {
+    public List<PlanResponse> getAllPlansForAdmin() {
         return planMapper.toResponseList(planService.getAllPlans());
     }
 
@@ -117,7 +117,7 @@ public class AdminFacadeImpl implements AdminFacade {
      */
     @Override
     @Transactional
-    public PlanResponseDTO setPlanStatus(Long id, boolean active) {
+    public PlanResponse setPlanStatus(Long id, boolean active) {
         if (!active && subscriptionService.hasSubscribersByPlan(id)) {
             throw new IllegalStateException("Impossibile disabilitare il piano: esistono abbonamenti collegati.");
         }

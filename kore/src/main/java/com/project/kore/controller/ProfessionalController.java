@@ -1,7 +1,7 @@
 package com.project.kore.controller;
 
-import com.project.kore.dto.response.ProfessionalSummaryDTO;
-import com.project.kore.dto.response.SlotDTO;
+import com.project.kore.dto.response.ProfessionalSummaryResponse;
+import com.project.kore.dto.response.SlotResponse;
 import com.project.kore.enums.Role;
 import com.project.kore.facade.ProfessionalFacade;
 import com.project.kore.facade.UserFacade;
@@ -39,7 +39,7 @@ public class ProfessionalController {
      * @return 200 con i professionisti disponibili
      */
     @GetMapping
-    public ResponseEntity<List<ProfessionalSummaryDTO>> getProfessionals(@RequestParam Role role) {
+    public ResponseEntity<List<ProfessionalSummaryResponse>> getProfessionals(@RequestParam Role role) {
         return ResponseEntity.ok(userFacade.findAvailableProfessionals(role));
     }
 
@@ -50,7 +50,7 @@ public class ProfessionalController {
      * @return 200 con i suoi slot liberi
      */
     @GetMapping("/{id}/slots")
-    public ResponseEntity<List<SlotDTO>> getProfessionalSlots(@PathVariable Long id) {
+    public ResponseEntity<List<SlotResponse>> getProfessionalSlots(@PathVariable Long id) {
         return ResponseEntity.ok(professionalFacade.getAvailableSlots(id));
     }
 
@@ -62,8 +62,8 @@ public class ProfessionalController {
      * @return 200 con gli slot creati
      */
     @PostMapping("/slots")
-    public ResponseEntity<List<SlotDTO>> createSlots(@AuthenticationPrincipal User user,
-                                                      @RequestBody List<SlotDTO> slots) {
+    public ResponseEntity<List<SlotResponse>> createSlots(@AuthenticationPrincipal User user,
+                                                          @RequestBody List<SlotResponse> slots) {
         return ResponseEntity.ok(professionalFacade.createSlots(user.getId(), slots));
     }
 

@@ -2,6 +2,7 @@ package com.project.kore.facade.impl;
 
 import com.project.kore.dto.request.LoginRequest;
 import com.project.kore.dto.request.RegisterRequest;
+import com.project.kore.dto.response.AuthResultResponse;
 import com.project.kore.dto.response.UserResponse;
 import com.project.kore.enums.Role;
 import com.project.kore.exception.booking.ProfessionalSoldOutException;
@@ -13,7 +14,6 @@ import com.project.kore.mapper.UserMapper;
 import com.project.kore.model.Plan;
 import com.project.kore.model.User;
 import com.project.kore.security.JwtUtil;
-import com.project.kore.dto.response.AuthResult;
 import com.project.kore.service.EmailService;
 import com.project.kore.service.PlanService;
 import com.project.kore.service.UserService;
@@ -90,13 +90,13 @@ public class AuthFacadeImpl implements AuthFacade {
     // Verifica la password e, se combacia, genera il JWT e lo restituisce insieme all'utente.
     @Override
     @Transactional(readOnly = true)
-    public AuthResult login(LoginRequest request) {
+    public AuthResultResponse login(LoginRequest request) {
         User user = userService.getUserByEmail(request.email());
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
             throw new BadCredentialsException("Credenziali non valide");
         }
         String jwtToken = jwtUtil.generateToken(user);
-        return AuthResult.builder().token(jwtToken).user(user).build();
+        return AuthResultResponse.builder().token(jwtToken).user(user).build();
     }
 
     // Genera il token di reset (vita breve, 30 min) e lo invia via email. Errori SMTP loggati ma non propagati.

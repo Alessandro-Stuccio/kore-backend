@@ -3,7 +3,7 @@ package com.project.kore.facade;
 import com.project.kore.dto.request.LoginRequest;
 import com.project.kore.dto.request.RegisterRequest;
 import com.project.kore.dto.response.UserResponse;
-import com.project.kore.dto.response.AuthResult;
+import com.project.kore.dto.response.AuthResultResponse;
 import com.project.kore.exception.booking.ProfessionalSoldOutException;
 import com.project.kore.exception.common.ResourceAlreadyExistsException;
 import com.project.kore.util.BusinessConstants;
@@ -38,7 +38,7 @@ public interface AuthFacade {
      * @return l'esito con il token JWT e i dati utente
      * @throws BadCredentialsException se le credenziali non sono valide
      */
-    AuthResult login(@Valid LoginRequest request);
+    AuthResultResponse login(@Valid LoginRequest request);
 
     /**
      * Avvia il recupero password inviando l'email con il link di reset.

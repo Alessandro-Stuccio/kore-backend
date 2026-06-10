@@ -4,7 +4,7 @@ import com.project.kore.dto.request.PlanRequest;
 import com.project.kore.dto.request.ProfileUpdateRequest;
 import com.project.kore.dto.response.ClientBasicInfoResponse;
 import com.project.kore.dto.response.ClientDashboardResponse;
-import com.project.kore.dto.response.ProfessionalSummaryDTO;
+import com.project.kore.dto.response.ProfessionalSummaryResponse;
 import com.project.kore.dto.response.SubscriptionResponse;
 import com.project.kore.enums.Role;
 import com.project.kore.exception.common.ResourceAlreadyExistsException;
@@ -78,5 +78,5 @@ public interface UserFacade {
      * @param role il ruolo dei professionisti da cercare
      * @return i professionisti disponibili
      */
-    List<ProfessionalSummaryDTO> findAvailableProfessionals(Role role);
+    List<ProfessionalSummaryResponse> findAvailableProfessionals(Role role);
 }
