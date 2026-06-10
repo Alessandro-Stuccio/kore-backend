@@ -7,7 +7,7 @@ import com.project.kore.model.User;
 /**
  * Racchiude le regole di prenotazione che cambiano in base al tipo di professionista
  * (PT o nutrizionista): controllo dell'assegnazione cliente-professionista e gestione
- * dei crediti dedicati sull'abbonamento. SlotServiceImpl sceglie l'implementazione giusta
+ * dei crediti dedicati sull'abbonamento. BookingFacadeImpl sceglie l'implementazione giusta
  * a runtime in base al ruolo.
  */
 public interface BookingStrategy {

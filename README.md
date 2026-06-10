@@ -64,14 +64,13 @@ Coordinate Maven: `com.project:kore:0.0.1-SNAPSHOT`. Package base: `com.project.
 Ogni richiesta segue un percorso unidirezionale, senza salti di layer:
 
 ```
-Controllers → Facades → Services → Builders → Repositories → PostgreSQL
-                                 ↕ Mappers (entità ↔ DTO)
+Controllers → Facades → Services → Repositories → PostgreSQL
+                       ↕ Mappers (entità ↔ DTO)
 ```
 
 - **Controllers** (`controller/`) — espongono gli endpoint REST; delegano interamente a facade o service, senza business logic.
 - **Facades** (`facade/` + `facade/impl/`) — punti d'ingresso coarse-grained che orchestrano più servizi per le operazioni complesse.
-- **Services** (`service/` + `service/impl/`) — contengono la business logic; interfacce in `service/`, implementazioni in `service/impl/`.
-- **Builders** (`builder/` + `builder/impl/`) — costruiscono le entità del dominio tramite Builder pattern; tutte le entità passano da un builder dedicato.
+- **Services** (`service/` + `service/impl/`) — contengono la business logic e assemblano direttamente le entità del dominio; interfacce in `service/`, implementazioni in `service/impl/`.
 - **Mappers** (`mapper/`) — convertono entità JPA ↔ DTO, un mapper per entità.
 - **Repositories** (`repository/`) — Spring Data JPA; nessun SQL custom oltre alle JPQL nelle `@Query`.
 
@@ -85,8 +84,6 @@ com.project.kore/
 ├── service/              # interfacce service
 │   ├── impl/             # implementazioni service
 │   └── strategy/         # Strategy pattern per le prenotazioni
-├── builder/              # 9 interfacce builder
-│   └── impl/             # implementazioni builder
 ├── mapper/               # 9 mapper entità ↔ DTO
 ├── dto/                  # request / response
 ├── model/                # 10 entità JPA
@@ -139,14 +136,11 @@ Ogni interfaccia in `facade/` ha la sua implementazione `…Impl` in `facade/imp
 | Pattern | Dove | Descrizione |
 |---|---|---|
 | **Strategy** | `service/strategy/` | `BookingStrategy` con `PersonalTrainerBookingStrategy` e `NutritionistBookingStrategy`; `SlotServiceImpl` seleziona la strategia a runtime in base al ruolo del professionista (dispatch dinamico) |
-| **Builder** | `builder/` + `builder/impl/` | Ogni entità è assemblata da un builder dedicato; `SlotBuilder` copre l'intero ciclo di vita dello slot, incluso `bookedAt` |
 | **Facade** | `facade/` + `facade/impl/` | Punti d'ingresso che orchestrano più servizi; naming `<Name>Facade` |
 
-### Builder (9)
-
-`UserBuilder`, `SubscriptionBuilder`, `SlotBuilder`, `WeeklyScheduleBuilder`, `PlanBuilder`,
-`ReviewBuilder`, `ChatBuilder`, `MessageBuilder`, `DocumentBuilder` — ciascuno con la propria
-implementazione in `builder/impl/`.
+> Le entità del dominio sono costruite direttamente nei service/facade (es. `new Subscription()`),
+> senza un layer di builder dedicato. I **response DTO** (es. `AuthResponse`, `BookingResponse`)
+> espongono comunque un `Builder` statico scritto a mano via `static Builder builder()`.
 
 ### Mapper dedicati (9)
 
@@ -168,7 +162,7 @@ Per prevenire overbooking e aggiornamenti concorrenti sulle risorse "calde":
 
 | Meccanismo | Dove | Scopo |
 |---|---|---|
-| **Optimistic locking** | `@Version` su `Slot`, `Subscription`, `User` | Gestione conflitti senza lock espliciti; `ObjectOptimisticLockingFailureException` → `ConcurrentUpdateException` |
+| **Optimistic locking** | `@Version` su `Slot`, `Subscription`, `User` | Gestione conflitti senza lock espliciti; `ObjectOptimisticLockingFailureException` mappata da `GlobalExceptionHandler` su HTTP 409 |
 | **Pessimistic locking** | `@Lock(PESSIMISTIC_WRITE)` su `SlotRepository.findByIdWithLock()` e `SubscriptionRepository.findByUserAndActiveTrueWithLock()` | Lock a DB sulle righe contese |
 | **Lock in-process fine-grained** | `ConcurrentHashMap<Long, LockReference>` di `ReentrantLock` per-slot in `SlotServiceImpl`, con `synchronized` sull'accesso alla mappa | Serializzazione delle prenotazioni sullo stesso slot all'interno della JVM |
 
@@ -447,7 +441,7 @@ Configurazione in `src/main/resources/log4j2-spring.xml`, con tre appender:
 ## Testing
 
 ```powershell
-# Suite completa (~64 classi di test)
+# Suite completa (~60 classi di test)
 .\mvnw.cmd test
 
 # Singola classe
@@ -468,11 +462,5 @@ disabilitati automaticamente.
 
 ### Copertura per layer
 
-Controller, facade, service, strategy, mapper, builder, security (JWT, filter, interceptor STOMP),
+Controller, facade, service, strategy, mapper, security (JWT, filter, interceptor STOMP),
 scheduler, messaging (publisher/consumer) ed exception handling.
-
----
-
-## Licenza
-
-Distribuito con licenza **MIT**.
