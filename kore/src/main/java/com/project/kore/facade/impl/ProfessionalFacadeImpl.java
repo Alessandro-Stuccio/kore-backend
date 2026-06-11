@@ -28,7 +28,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -65,6 +67,12 @@ public class ProfessionalFacadeImpl implements ProfessionalFacade {
         return slotMapper.toDtoList(slotService.getAvailableSlots(professional));
     }
 
+    /**
+     * Salva la disponibilità del professionista in modo idempotente: scarta i doppioni interni
+     * alla richiesta (stesso startTime) e gli orari già a calendario, così come fa
+     * {@link #generateSlotsFromSchedule}. Evita la violazione del vincolo uq_slot_prof_start
+     * quando la selezione include slot già generati dallo scheduler o ripetuti.
+     */
     @Override
     @Transactional
     public List<SlotResponse> createSlots(Long professionalId, List<SlotResponse> slots) {
@@ -72,7 +80,25 @@ public class ProfessionalFacadeImpl implements ProfessionalFacade {
         if (professional.getRole() != Role.PERSONAL_TRAINER && professional.getRole() != Role.NUTRITIONIST) {
             throw new AccessDeniedException("Solo i professionisti possono creare slot");
         }
-        List<Slot> entities = slotMapper.toEntityList(slots, professional);
+
+        // Dedup interna: un solo slot per startTime, preservando l'ordine e scartando i null.
+        Map<LocalDateTime, SlotResponse> distinct = new LinkedHashMap<>();
+        for (SlotResponse slot : slots) {
+            if (slot.getStartTime() != null) {
+                distinct.putIfAbsent(slot.getStartTime(), slot);
+            }
+        }
+
+        // Tiene solo gli orari non ancora presenti a DB per questo professionista.
+        List<SlotResponse> toCreate = distinct.values().stream()
+                .filter(slot -> !slotService.slotExists(professional, slot.getStartTime()))
+                .toList();
+
+        if (toCreate.isEmpty()) {
+            return List.of();
+        }
+
+        List<Slot> entities = slotMapper.toEntityList(toCreate, professional);
         return slotMapper.toDtoList(slotService.createSlots(entities));
     }
 

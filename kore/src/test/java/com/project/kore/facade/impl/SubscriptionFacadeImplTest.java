@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -210,5 +211,43 @@ class SubscriptionFacadeImplTest {
         Subscription result = facade.activateSubscription(user, annualePlan, PaymentFrequency.RATE_MENSILI);
 
         assertThat(result.getPaymentFrequency()).isEqualTo(PaymentFrequency.RATE_MENSILI);
+    }
+
+    // ─── validateInvariants (crediti negativi dal piano) ─────────────────────────
+
+    @Test
+    @DisplayName("activateSubscription: crediti PT negativi dal piano → IllegalArgumentException")
+    void activateSubscription_negativePtCredits_throws() {
+        Plan badPlan = new Plan();
+        badPlan.setDuration(PlanDuration.SEMESTRALE);
+        badPlan.setMonthlyCreditsPT(-1);
+        badPlan.setMonthlyCreditsNutri(0);
+
+        when(subscriptionService.findActiveByUser(user)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() ->
+                facade.activateSubscription(user, badPlan, PaymentFrequency.UNICA_SOLUZIONE))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("currentCreditsPT");
+
+        verify(subscriptionService, never()).save(any(Subscription.class));
+    }
+
+    @Test
+    @DisplayName("activateSubscription: crediti Nutri negativi dal piano → IllegalArgumentException")
+    void activateSubscription_negativeNutriCredits_throws() {
+        Plan badPlan = new Plan();
+        badPlan.setDuration(PlanDuration.ANNUALE);
+        badPlan.setMonthlyCreditsPT(0);
+        badPlan.setMonthlyCreditsNutri(-3);
+
+        when(subscriptionService.findActiveByUser(user)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() ->
+                facade.activateSubscription(user, badPlan, PaymentFrequency.UNICA_SOLUZIONE))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("currentCreditsNutri");
+
+        verify(subscriptionService, never()).save(any(Subscription.class));
     }
 }

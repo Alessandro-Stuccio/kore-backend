@@ -2,6 +2,7 @@ package com.project.kore.service.impl;
 
 import com.project.kore.enums.ChatStatus;
 import com.project.kore.exception.common.CustomResourceNotFoundException;
+import com.project.kore.messaging.ChatMessagePublisher;
 import com.project.kore.model.Chat;
 import com.project.kore.model.User;
 import com.project.kore.repository.ChatRepository;
@@ -21,10 +22,13 @@ public class ChatServiceImpl implements ChatService {
 
     private final ChatRepository chatRepository;
     private final Validator validator;
+    private final ChatMessagePublisher chatMessagePublisher;
 
-    public ChatServiceImpl(ChatRepository chatRepository, Validator validator) {
+    public ChatServiceImpl(ChatRepository chatRepository, Validator validator,
+                           ChatMessagePublisher chatMessagePublisher) {
         this.chatRepository = chatRepository;
         this.validator = validator;
+        this.chatMessagePublisher = chatMessagePublisher;
     }
 
     // Riusa la chat esistente tra i due utenti; se non c'è ne crea una nuova al volo.
@@ -81,5 +85,10 @@ public class ChatServiceImpl implements ChatService {
         chat.setClosedAt(LocalDateTime.now());
         chat.setClosedBy(moderator);
         chatRepository.save(chat);
+    }
+
+    @Override
+    public void publishMessage(Long chatId, Long senderId, String content) {
+        chatMessagePublisher.publish(chatId, senderId, content);
     }
 }

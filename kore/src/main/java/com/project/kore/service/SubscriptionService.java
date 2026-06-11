@@ -73,4 +73,12 @@ public interface SubscriptionService {
      * @return {@code true} se esiste almeno un abbonamento collegato al piano
      */
     boolean hasSubscribersByPlan(@NotNull @Min(1) Long planId);
+
+    /**
+     * Dice se qualche abbonamento <b>attivo</b> usa quel piano (serve prima di modificarlo).
+     *
+     * @param planId id del piano
+     * @return {@code true} se esiste almeno un abbonamento attivo collegato al piano
+     */
+    boolean hasActiveSubscribersByPlan(@NotNull @Min(1) Long planId);
 }

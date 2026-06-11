@@ -89,6 +89,10 @@ public class AdminFacadeImpl implements AdminFacade {
     public PlanResponse updatePlan(Long id, PlanCreateRequest request) {
         Plan plan = planService.getPlanById(id);
 
+        if (subscriptionService.hasActiveSubscribersByPlan(id)) {
+            throw new IllegalStateException("Impossibile modificare il piano: esistono abbonamenti attivi collegati.");
+        }
+
         if (request.name() != null && !request.name().isBlank() && !request.name().equals(plan.getName())) {
             if (planService.existsByName(request.name())) {
                 throw new ResourceAlreadyExistsException("Piano", "name", request.name());

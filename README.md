@@ -69,8 +69,8 @@ Controllers → Facades → Services → Repositories → PostgreSQL
 ```
 
 - **Controllers** (`controller/`) — espongono gli endpoint REST; delegano interamente a facade o service, senza business logic.
-- **Facades** (`facade/` + `facade/impl/`) — punti d'ingresso coarse-grained che orchestrano più servizi per le operazioni complesse.
-- **Services** (`service/` + `service/impl/`) — contengono la business logic e assemblano direttamente le entità del dominio; interfacce in `service/`, implementazioni in `service/impl/`.
+- **Facades** (`facade/` + `facade/impl/`) — punti d'ingresso coarse-grained che orchestrano i servizi e concentrano la business logic e la validazione delle operazioni.
+- **Services** (`service/` + `service/impl/`) — operazioni sul dominio e accesso a dati/infrastruttura: interagiscono con Repository e Publisher e assemblano le entità; interfacce in `service/`, implementazioni in `service/impl/`.
 - **Mappers** (`mapper/`) — convertono entità JPA ↔ DTO, un mapper per entità.
 - **Repositories** (`repository/`) — Spring Data JPA; nessun SQL custom oltre alle JPQL nelle `@Query`.
 
@@ -114,7 +114,7 @@ com.project.kore/
 | `BookingFacade` | Prenotazione e cancellazione slot |
 | `SubscriptionFacade` | Attivazione abbonamenti e gestione crediti |
 | `PlanFacade` | CRUD piani di abbonamento |
-| `ChatFacade` | Conversazioni, messaggi, permessi, chiusura chat |
+| `ChatFacade` | Conversazioni, messaggi, permessi, chiusura chat; orchestra anche il flusso real-time WebSocket (join/leave/send/delivered/read) |
 | `DocumentFacade` | Upload/download/eliminazione documenti per ruolo |
 | `ReviewFacade` | Creazione e lettura recensioni |
 | `ActivityFeedFacade` | Feed attività recenti (prenotazioni + documenti) |
@@ -152,7 +152,7 @@ Ogni interfaccia in `facade/` ha la sua implementazione `…Impl` in `facade/imp
 | `SlotMapper` | `Slot` ↔ `SlotDTO` |
 | `ReviewMapper` | `Review` ↔ `ReviewResponse` |
 | `DocumentMapper` | `Document` ↔ `DocumentResponse` |
-| `ChatMapper` | `Chat`/`Message` ↔ DTO chat |
+| `ChatMapper` | `Chat`/`Message` ↔ DTO chat (inclusi i DTO WebSocket: `WsMessageResponse`/`WsNotificationResponse`/`WsUnreadUpdateResponse`) |
 | `PlanMapper` | `Plan` ↔ `PlanResponseDTO` |
 | `ActivityFeedMapper` | `Slot`/`Document` → `ActivityFeedItemResponse` |
 
@@ -195,7 +195,7 @@ un'entità `Booking` separata.
 | `Plan` | name, duration, crediti mensili PT/Nutri, fullPrice, monthlyInstallmentPrice | Basic/Premium × Semestrale/Annuale |
 | `Review` | clientId, professionalId, rating, comment, createdAt | Una recensione per coppia cliente–professionista |
 | `Chat` | participantA, participantB, status, createdAt | Conversazione a due |
-| `Message` | chatId, senderId, content, status, createdAt | Real-time via WebSocket/RabbitMQ |
+| `Message` | chatId, content, status, timeStamp, sentByUser1 | Real-time via WebSocket/RabbitMQ; il mittente si ricava dal flag `sentByUser1` (nessuna FK sul mittente) |
 | `Document` | fileName, filePath, contentType, type, ownerId, uploadedById, notes | File su filesystem, metadati su DB |
 | `AuditLog` | userId, action, entityType, entityId, timestamp | Tracciamento azioni utente |
 
@@ -270,7 +270,7 @@ I 16 controller espongono la superficie API sotto `/api`.
 - Canali principali:
   - `/topic/chat/{roomId}` — messaggi della stanza (broadcast)
   - `/user/queue/notifications` — notifiche private (nuovo messaggio, conteggio non letti, delivered/read)
-  - `/app/chat.join`, `/app/chat.leave`, `/app/chat.send`, `/app/chat.typing`, `/app/chat.read` — comandi client → server
+  - `/app/chat.join`, `/app/chat.leave`, `/app/chat.send`, `/app/chat.delivered`, `/app/chat.read` — comandi client → server
 
 ### RabbitMQ
 

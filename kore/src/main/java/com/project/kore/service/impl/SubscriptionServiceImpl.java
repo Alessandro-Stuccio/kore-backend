@@ -64,4 +64,9 @@ public Subscription getSubscriptionStatus(User user) {
     public boolean hasSubscribersByPlan(Long planId) {
         return subscriptionRepository.existsByPlanId(planId);
     }
+
+    @Override
+    public boolean hasActiveSubscribersByPlan(Long planId) {
+        return subscriptionRepository.existsByPlanIdAndActiveTrue(planId);
+    }
 }

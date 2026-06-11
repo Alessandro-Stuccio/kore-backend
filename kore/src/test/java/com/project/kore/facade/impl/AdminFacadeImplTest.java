@@ -209,6 +209,22 @@ class AdminFacadeImplTest {
                 .hasMessageContaining("Durata non valida");
     }
 
+    @Test
+    @DisplayName("updatePlan: throws IllegalStateException when the plan has active subscriptions")
+    void updatePlan_withActiveSubscriptions_throwsIllegalState() {
+        PlanCreateRequest updateRequest = new PlanCreateRequest("Premium", "ANNUALE", 200.0, 30.0, 2, 2);
+
+        when(planService.getPlanById(1L)).thenReturn(plan);
+        when(subscriptionService.hasActiveSubscribersByPlan(1L)).thenReturn(true);
+
+        assertThatThrownBy(() -> facade.updatePlan(1L, updateRequest))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("abbonamenti attivi");
+
+        verify(planService, never()).createPlan(any());
+        verify(planMapper, never()).updatePlanFromRequest(any(), any());
+    }
+
     // ─── setPlanStatus / getAllPlansForAdmin ───────────────────────────────────────
 
     @Test

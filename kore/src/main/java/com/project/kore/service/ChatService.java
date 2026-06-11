@@ -62,4 +62,13 @@ public interface ChatService {
      * @throws CustomResourceNotFoundException se la chat non esiste
      */
     void closeChat(@NotNull @Min(1) Long chatId, @NotNull User moderator);
+
+    /**
+     * Pubblica un messaggio sulla coda per la persistenza asincrona (pura delega al publisher).
+     *
+     * @param chatId   id della chat
+     * @param senderId id del mittente
+     * @param content  testo del messaggio
+     */
+    void publishMessage(@NotNull @Min(1) Long chatId, @NotNull Long senderId, String content);
 }

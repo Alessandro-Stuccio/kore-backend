@@ -1,10 +1,14 @@
 package com.project.kore.facade.impl;
 
+import com.project.kore.config.WebSocketEventListener;
 import com.project.kore.dto.request.SendMessageRequest;
 import com.project.kore.dto.response.ChatMessageResponse;
 import com.project.kore.dto.response.ClientBasicInfoResponse;
 import com.project.kore.dto.response.ConversationPreviewResponse;
+import com.project.kore.dto.response.WsDispatch;
+import com.project.kore.dto.response.WsMessageResponse;
 import com.project.kore.enums.ChatStatus;
+import com.project.kore.enums.MessageStatus;
 import com.project.kore.enums.Role;
 import com.project.kore.exception.chat.ChatNotAllowedException;
 import com.project.kore.exception.common.CustomResourceNotFoundException;
@@ -15,12 +19,14 @@ import com.project.kore.mapper.ChatMapper;
 import com.project.kore.model.Chat;
 import com.project.kore.model.Message;
 import com.project.kore.model.User;
+import com.project.kore.service.ChatAsyncService;
 import com.project.kore.service.ChatService;
 import com.project.kore.service.MessageService;
 import com.project.kore.service.UserService;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -32,19 +38,26 @@ import java.util.stream.Collectors;
 @Component
 public class ChatFacadeImpl implements ChatFacade {
 
+    private static final String NOTIFICATIONS_QUEUE = "/queue/notifications";
+
     private final ChatService chatService;
     private final MessageService messageService;
     private final ChatMapper chatMapper;
     private final UserService userService;
     private final UserMapper userMapper;
+    private final ChatAsyncService chatAsyncService;
+    private final WebSocketEventListener eventListener;
 
     public ChatFacadeImpl(ChatService chatService, MessageService messageService,
-                          ChatMapper chatMapper, UserService userService, UserMapper userMapper) {
+                          ChatMapper chatMapper, UserService userService, UserMapper userMapper,
+                          ChatAsyncService chatAsyncService, WebSocketEventListener eventListener) {
         this.chatService = chatService;
         this.messageService = messageService;
         this.chatMapper = chatMapper;
         this.userService = userService;
         this.userMapper = userMapper;
+        this.chatAsyncService = chatAsyncService;
+        this.eventListener = eventListener;
     }
 
     @Override
@@ -167,6 +180,111 @@ public class ChatFacadeImpl implements ChatFacade {
                         .orElse(moderators.get(0))
         );
         return userMapper.toBasicInfoResponse(selected);
+    }
+
+    @Override
+    public void joinRoom(String sessionId, String roomId) {
+        eventListener.joinRoom(sessionId, roomId);
+    }
+
+    @Override
+    public void leaveRoom(String sessionId, String roomId) {
+        eventListener.leaveRoom(sessionId, roomId);
+    }
+
+    @Override
+    @Transactional
+    public List<WsDispatch> processIncomingMessage(Long chatId, Long senderId, String content) {
+        List<WsDispatch> out = new ArrayList<>();
+        String roomId = String.valueOf(chatId);
+
+        Chat chat = chatService.getChatEntity(chatId);
+        // Scrivere in una chat chiusa la riapre automaticamente.
+        if (chat != null && chat.getStatus() == ChatStatus.CLOSED) {
+            chat.setStatus(ChatStatus.OPEN);
+            chatService.save(chat);
+        }
+        // La persistenza vera è asincrona: pubblichiamo sempre sulla coda.
+        chatService.publishMessage(chatId, senderId, content);
+
+        User sender;
+        User receiver = null;
+        if (chat != null) {
+            sender = chat.getUser1().getId().equals(senderId) ? chat.getUser1() : chat.getUser2();
+            receiver = counterpart(chat, senderId);
+        } else {
+            sender = userService.getUserById(senderId);
+        }
+
+        WsMessageResponse broadcast = chatMapper.toWsMessage(chatId, sender, receiver, content, "SENT");
+        out.add(WsDispatch.builder()
+                .destination("/topic/chat/" + roomId)
+                .payload(broadcast)
+                .build());
+
+        if (receiver != null) {
+            if (!eventListener.isUserInRoom(receiver.getId(), roomId)) {
+                out.add(WsDispatch.builder()
+                        .user(receiver.getEmail())
+                        .destination(NOTIFICATIONS_QUEUE)
+                        .payload(chatMapper.toNewMessageNotification(broadcast))
+                        .build());
+            }
+            int unread = messageService.getTotalUnreadCount(receiver.getId());
+            out.add(WsDispatch.builder()
+                    .user(receiver.getEmail())
+                    .destination(NOTIFICATIONS_QUEUE)
+                    .payload(chatMapper.toUnreadUpdate(receiver.getId(), unread))
+                    .build());
+        }
+        return out;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<WsDispatch> markDelivered(Long chatId, Long userId) {
+        chatAsyncService.markAsDeliveredAsync(chatId, userId);
+        Chat chat = chatService.getChatEntity(chatId);
+        if (chat == null) {
+            return List.of();
+        }
+        User sender = counterpart(chat, userId);
+        return List.of(WsDispatch.builder()
+                .user(sender.getEmail())
+                .destination(NOTIFICATIONS_QUEUE)
+                .payload(chatMapper.toStatusNotification(chatId, "DELIVERED_UPDATE", MessageStatus.DELIVERED))
+                .build());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<WsDispatch> markRead(Long chatId, Long userId) {
+        chatAsyncService.markAsReadAsync(chatId, userId);
+        Chat chat = chatService.getChatEntity(chatId);
+        if (chat == null) {
+            return List.of();
+        }
+        User reader = chat.getUser1().getId().equals(userId) ? chat.getUser1() : chat.getUser2();
+        User sender = counterpart(chat, userId);
+
+        List<WsDispatch> out = new ArrayList<>();
+        int unread = messageService.getTotalUnreadCount(reader.getId());
+        out.add(WsDispatch.builder()
+                .user(reader.getEmail())
+                .destination(NOTIFICATIONS_QUEUE)
+                .payload(chatMapper.toUnreadUpdate(reader.getId(), unread))
+                .build());
+        out.add(WsDispatch.builder()
+                .user(sender.getEmail())
+                .destination(NOTIFICATIONS_QUEUE)
+                .payload(chatMapper.toStatusNotification(chatId, "READ_UPDATE", MessageStatus.READ))
+                .build());
+        return out;
+    }
+
+    /** L'altro partecipante della chat rispetto a {@code userId}. */
+    private User counterpart(Chat chat, Long userId) {
+        return chat.getUser1().getId().equals(userId) ? chat.getUser2() : chat.getUser1();
     }
 
     private Optional<User> findExistingModeratorConversation(Long userId, List<User> moderators) {

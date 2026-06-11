@@ -155,6 +155,8 @@
 						<exclude>**/model/**</exclude>
 						<exclude>**/enums/**</exclude>
 						<exclude>**/exception/**</exclude>
+						<exclude>**/mapper/**</exclude>
+						<exclude>**/config/**</exclude>
 						<exclude>**/KoreApplication.class</exclude>
 						<exclude>**/config/DevFileSeedInitializer.class</exclude>
 						<exclude>**/config/LogsDatabaseInitializer.class</exclude>

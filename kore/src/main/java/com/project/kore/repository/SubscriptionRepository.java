@@ -31,4 +31,7 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
 
     // Vero se un piano ha abbonamenti collegati (attivi o storici): da controllare prima di eliminarlo.
     boolean existsByPlanId(Long planId);
+
+    // Vero se il piano ha almeno un abbonamento ATTIVO collegato: da controllare prima di modificarlo.
+    boolean existsByPlanIdAndActiveTrue(Long planId);
 }

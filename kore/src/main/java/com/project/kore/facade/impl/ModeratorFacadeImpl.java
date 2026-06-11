@@ -143,6 +143,13 @@ public class ModeratorFacadeImpl implements ModeratorFacade {
         }
 
         userService.deleteUser(id);
+
+        // Un utente eliminato non deve più avere un abbonamento attivo: lo disattiviamo così
+        // sparisce dalle statistiche (attivi, revenue, popolarità piani, crediti) e dalla home.
+        subscriptionService.findActiveByUser(target).ifPresent(sub -> {
+            sub.setActive(false);
+            subscriptionService.save(sub);
+        });
     }
 
     @Override

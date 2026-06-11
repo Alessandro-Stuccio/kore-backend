@@ -4,6 +4,7 @@ import com.project.kore.dto.request.SendMessageRequest;
 import com.project.kore.dto.response.ChatMessageResponse;
 import com.project.kore.dto.response.ClientBasicInfoResponse;
 import com.project.kore.dto.response.ConversationPreviewResponse;
+import com.project.kore.dto.response.WsDispatch;
 import com.project.kore.exception.chat.ChatNotAllowedException;
 import com.project.kore.exception.common.CustomResourceNotFoundException;
 import com.project.kore.model.User;
@@ -96,4 +97,50 @@ public interface ChatFacade {
      * @throws CustomResourceNotFoundException se non esiste alcun moderatore nel sistema
      */
     ClientBasicInfoResponse getModerator(User user);
+
+    /**
+     * Registra la sessione WebSocket nella stanza (presence), così si sa quando il destinatario è presente.
+     *
+     * @param sessionId id della sessione STOMP
+     * @param roomId    id della stanza (chat) a cui unirsi
+     */
+    void joinRoom(String sessionId, String roomId);
+
+    /**
+     * Toglie la sessione WebSocket dalla stanza (presence).
+     *
+     * @param sessionId id della sessione STOMP
+     * @param roomId    id della stanza (chat) da abbandonare
+     */
+    void leaveRoom(String sessionId, String roomId);
+
+    /**
+     * Gestisce un messaggio in arrivo via WebSocket: riapre la chat se chiusa, pubblica per la persistenza
+     * asincrona, costruisce il broadcast e le eventuali notifiche/aggiornamenti non letti per il destinatario.
+     *
+     * @param chatId   id della chat
+     * @param senderId id del mittente
+     * @param content  testo del messaggio
+     * @return gli invii STOMP da inoltrare (broadcast + eventuali notifiche private)
+     */
+    List<WsDispatch> processIncomingMessage(Long chatId, Long senderId, String content);
+
+    /**
+     * Segna i messaggi come consegnati e prepara la notifica {@code DELIVERED_UPDATE} per il mittente.
+     *
+     * @param chatId id della chat
+     * @param userId id del destinatario che ha ricevuto i messaggi
+     * @return gli invii STOMP da inoltrare (vuoto se la chat non esiste)
+     */
+    List<WsDispatch> markDelivered(Long chatId, Long userId);
+
+    /**
+     * Segna i messaggi come letti, prepara l'aggiornamento dei non letti per il lettore e la notifica
+     * {@code READ_UPDATE} per il mittente.
+     *
+     * @param chatId id della chat
+     * @param userId id del lettore
+     * @return gli invii STOMP da inoltrare (vuoto se la chat non esiste)
+     */
+    List<WsDispatch> markRead(Long chatId, Long userId);
 }

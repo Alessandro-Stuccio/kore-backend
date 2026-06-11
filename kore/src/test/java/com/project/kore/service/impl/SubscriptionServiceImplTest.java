@@ -257,4 +257,23 @@ class SubscriptionServiceImplTest {
 
         assertThat(subscriptionService.hasSubscribersByPlan(99L)).isFalse();
     }
+
+    // ---- hasActiveSubscribersByPlan ----
+
+    @Test
+    @DisplayName("hasActiveSubscribersByPlan: returns true when at least one active subscription references the plan")
+    void hasActiveSubscribersByPlan_hasActiveSubs_returnsTrue() {
+        when(subscriptionRepository.existsByPlanIdAndActiveTrue(42L)).thenReturn(true);
+
+        assertThat(subscriptionService.hasActiveSubscribersByPlan(42L)).isTrue();
+        verify(subscriptionRepository).existsByPlanIdAndActiveTrue(42L);
+    }
+
+    @Test
+    @DisplayName("hasActiveSubscribersByPlan: returns false when no active subscription references the plan")
+    void hasActiveSubscribersByPlan_noActiveSubs_returnsFalse() {
+        when(subscriptionRepository.existsByPlanIdAndActiveTrue(99L)).thenReturn(false);
+
+        assertThat(subscriptionService.hasActiveSubscribersByPlan(99L)).isFalse();
+    }
 }

@@ -4,12 +4,14 @@ import com.project.kore.dto.request.ModeratorUserUpdateRequest;
 import com.project.kore.dto.request.UserCreateRequest;
 import com.project.kore.dto.response.SubscriptionResponse;
 import com.project.kore.dto.response.UserResponse;
+import com.project.kore.enums.PaymentFrequency;
 import com.project.kore.enums.Role;
 import com.project.kore.exception.common.ResourceAlreadyExistsException;
 import org.springframework.security.access.AccessDeniedException;
 import com.project.kore.facade.SubscriptionFacade;
 import com.project.kore.mapper.SubscriptionMapper;
 import com.project.kore.mapper.UserMapper;
+import com.project.kore.model.Plan;
 import com.project.kore.model.Subscription;
 import com.project.kore.model.User;
 import com.project.kore.service.ChatService;
@@ -25,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -253,6 +256,88 @@ class ModeratorFacadeImplTest {
                 .hasMessageContaining("PERSONAL_TRAINER");
     }
 
+    @Test
+    @DisplayName("createUser CLIENT with assignedNutritionist: links nutritionist when role is NUTRITIONIST")
+    void createUser_withAssignedNutri_linksNutritionist() {
+        UserCreateRequest request = new UserCreateRequest(
+                "new@test.com", "Luca", "Bianchi", "password123", "CLIENT",
+                null, 3L, null, null);
+
+        User nutriUser = new User();
+        nutriUser.setId(3L);
+        nutriUser.setRole(Role.NUTRITIONIST);
+
+        when(userService.existsByEmail("new@test.com")).thenReturn(false);
+        when(userService.encodePassword("password123")).thenReturn("$2a$10$hashed.password.value.ok");
+        when(userService.getUserById(3L)).thenReturn(nutriUser);
+        when(userService.save(any(User.class))).thenReturn(clientUser);
+        when(userMapper.toAdminResponse(clientUser)).thenReturn(userResponse);
+
+        facade.createUser(request, moderator);
+
+        verify(userService).getUserById(3L);
+    }
+
+    @Test
+    @DisplayName("createUser CLIENT with assignedNutritionist: throws AccessDeniedException when assigned user is not nutritionist")
+    void createUser_withAssignedNutri_notNutri_throwsUnauthorized() {
+        UserCreateRequest request = new UserCreateRequest(
+                "new@test.com", "Luca", "Bianchi", "password123", "CLIENT",
+                null, 1L, null, null);
+
+        User notNutri = new User();
+        notNutri.setId(1L);
+        notNutri.setRole(Role.CLIENT);
+
+        when(userService.existsByEmail("new@test.com")).thenReturn(false);
+        when(userService.encodePassword("password123")).thenReturn("$2a$10$hashed.password.value.ok");
+        when(userService.getUserById(1L)).thenReturn(notNutri);
+
+        assertThatThrownBy(() -> facade.createUser(request, moderator))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessageContaining("NUTRITIONIST");
+    }
+
+    @Test
+    @DisplayName("createUser CLIENT with plan and payment frequency: activates a subscription")
+    void createUser_withPlanAndPayment_activatesSubscription() {
+        UserCreateRequest request = new UserCreateRequest(
+                "new@test.com", "Luca", "Bianchi", "password123", "CLIENT",
+                null, null, 5L, "UNICA_SOLUZIONE");
+
+        Plan plan = new Plan();
+        plan.setId(5L);
+
+        when(userService.existsByEmail("new@test.com")).thenReturn(false);
+        when(userService.encodePassword("password123")).thenReturn("$2a$10$hashed.password.value.ok");
+        when(userService.save(any(User.class))).thenReturn(clientUser);
+        when(planService.getPlanById(5L)).thenReturn(plan);
+        when(userMapper.toAdminResponse(clientUser)).thenReturn(userResponse);
+
+        facade.createUser(request, moderator);
+
+        verify(planService).getPlanById(5L);
+        verify(subscriptionFacade).activateSubscription(clientUser, plan, PaymentFrequency.UNICA_SOLUZIONE);
+    }
+
+    @Test
+    @DisplayName("createUser CLIENT with invalid payment frequency: throws IllegalArgumentException")
+    void createUser_withInvalidPaymentFrequency_throwsIllegalArgument() {
+        UserCreateRequest request = new UserCreateRequest(
+                "new@test.com", "Luca", "Bianchi", "password123", "CLIENT",
+                null, null, 5L, "FREQUENZA_NON_VALIDA");
+
+        when(userService.existsByEmail("new@test.com")).thenReturn(false);
+        when(userService.encodePassword("password123")).thenReturn("$2a$10$hashed.password.value.ok");
+        when(userService.save(any(User.class))).thenReturn(clientUser);
+
+        assertThatThrownBy(() -> facade.createUser(request, moderator))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Frequenza di pagamento non valida");
+
+        verify(subscriptionFacade, never()).activateSubscription(any(), any(), any());
+    }
+
     // ─── updateUser ──────────────────────────────────────────────────────────────
 
     @Test
@@ -341,6 +426,21 @@ class ModeratorFacadeImplTest {
                 .isInstanceOf(AccessDeniedException.class);
 
         verify(userService, never()).deleteUser(anyLong());
+    }
+
+    @Test
+    @DisplayName("deleteUser: deactivates the user's active subscription so stats stop counting it")
+    void deleteUser_deactivatesActiveSubscription() {
+        Subscription activeSub = new Subscription();
+        activeSub.setActive(true);
+        when(userService.getUserById(1L)).thenReturn(clientUser);
+        when(subscriptionService.findActiveByUser(clientUser)).thenReturn(Optional.of(activeSub));
+
+        facade.deleteUser(1L, moderator);
+
+        verify(userService).deleteUser(1L);
+        assertThat(activeSub.isActive()).isFalse();
+        verify(subscriptionService).save(activeSub);
     }
 
     // ─── updateSubscriptionCredits ───────────────────────────────────────────────
