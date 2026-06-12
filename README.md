@@ -446,7 +446,7 @@ Configurazione in `src/main/resources/log4j2-spring.xml`, con tre appender:
 ## Testing
 
 ```powershell
-# Suite completa (~60 classi di test)
+# Suite completa (56 classi di test)
 .\mvnw.cmd test
 
 # Singola classe
@@ -467,5 +467,5 @@ disabilitati automaticamente.
 
 ### Copertura per layer
 
-Controller, facade, service, strategy, mapper, security (JWT, filter, interceptor STOMP),
-scheduler, messaging (publisher/consumer) ed exception handling.
+Controller, facade, service, strategy, security (JWT, filter, interceptor STOMP),
+scheduler, messaging (publisher/consumer).

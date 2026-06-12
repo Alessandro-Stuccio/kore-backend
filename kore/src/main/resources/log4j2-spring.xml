@@ -56,13 +56,6 @@
             <AppenderRef ref="AsyncLogDB"/>
         </Logger>
 
-        <!-- Observer/Event listeners: INFO -->
-        <Logger name="com.project.kore.observer" level="INFO" additivity="false">
-            <AppenderRef ref="Console"/>
-            <AppenderRef ref="File"/>
-            <AppenderRef ref="AsyncLogDB"/>
-        </Logger>
-
         <!-- Scheduler: INFO -->
         <Logger name="com.project.kore.scheduler" level="INFO" additivity="false">
             <AppenderRef ref="Console"/>
